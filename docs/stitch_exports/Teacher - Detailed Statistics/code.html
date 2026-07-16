@@ -1,0 +1,386 @@
+<!DOCTYPE html><html lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Teacher Thống kê chi tiết</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS with Theme Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#001a42",
+                        "secondary-container": "#d0e1fb",
+                        "primary-fixed": "#d8e2ff",
+                        "outline-variant": "#c2c6d6",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#311400",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "background": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface-variant": "#424754",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-container": "#fefcff",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-tint": "#005ac2",
+                        "tertiary-container": "#b75b00",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-primary": "#adc6ff",
+                        "tertiary": "#924700",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1e",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-surface": "#191c1e",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary": "#505f76",
+                        "primary-container": "#2170e4",
+                        "outline": "#727785",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary": "#0058be",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#eff1f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "gutter": "20px",
+                        "lg": "24px",
+                        "sidebar_width": "260px",
+                        "xs": "4px",
+                        "container_max": "1200px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "h3": ["Inter"],
+                        "body-md-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "h1": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h3": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md-mobile": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "display": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h1-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-[260px] bg-background border-r border-outline-variant flex-col py-lg z-20">
+<div class="px-lg mb-xl">
+<h1 class="font-h2 text-h2 font-bold text-primary">OnThi12</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Hệ thống ôn tập</p>
+</div>
+<div class="flex flex-col flex-grow">
+<!-- Tab 0: Trang chủ -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Trang chủ</span>
+</a>
+<!-- Tab 1: Đề thi -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Đề thi</span>
+</a>
+<!-- Tab 2: Lớp học -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Lớp học</span>
+</a>
+<!-- Tab 3: Thống kê (ACTIVE) -->
+<a class="flex items-center gap-md px-md py-sm bg-primary-fixed-dim/10 text-primary font-bold border-l-4 border-primary scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-md text-label-md">Thống kê</span>
+</a>
+<!-- Tab 4: Cài đặt -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="md:ml-[260px] flex flex-col min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-260px)] h-16 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-lg z-10">
+<!-- Mobile Brand/Menu Trigger (Visible only on small screens) -->
+<div class="md:hidden flex items-center gap-sm">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant">menu</span>
+<span class="font-h3 text-h3 font-black text-primary">OnThi12</span>
+</div>
+<!-- Search Bar (on_left) -->
+<div class="hidden md:flex flex-1 max-w-md relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Tìm kiếm học sinh, đề thi..." type="text">
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hidden sm:block">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-sm">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A close-up, highly professional headshot of a Vietnamese high school teacher in a well-lit, modern classroom environment. The lighting is soft and natural, emphasizing a bright, calm, light-mode aesthetic. The teacher looks approachable and focused. The color palette relies on clean whites, subtle grays, and soft blues to match a modern educational software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj_vm04ODq_Sigp8KVte59gg8Bx7-W2FY7Q9nmZP6aKl-AX711jdFu1UPEu6dGbJfRmpEULWOScj6h4cBEURhVK_PBnOj-29_RgpZCVTOYrX_5VIWyqq4xfrXv8fABhoChw_Y7RPtq6SRVIZGQKVMv-krLOQAHWKA5ToQKro9OO--7f4UC3cVs435QcdhyHzAPg52BMuwOW0HSuXeOzP9CBNg3rHp2iOSZhVKkv3j-4CeN8qOUpA-KCDJlc_MfsZfHHmzB5bUIx8Nr">
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 pt-24 pb-xl px-md md:px-lg max-w-container_max w-full mx-auto">
+<!-- Page Header & Global Controls -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-xl gap-md">
+<div>
+<h2 class="font-h1 text-h1 text-on-background">Teacher Thống kê chi tiết</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Phân tích hiệu suất học tập qua các bài kiểm tra gần đây.</p>
+</div>
+<!-- Exam Selector Dropdown -->
+<div class="relative w-full sm:w-72">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant text-on-background font-label-md text-label-md py-3 pl-4 pr-10 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm">
+<option>Đề thi thử THPT Quốc gia môn Toán lần 1</option>
+<option>Kiểm tra 15 phút - Đạo hàm</option>
+<option>Đề thi học kỳ I năm 2023-2024</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Bento Grid Layout for Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Key Metrics (Top Row) -->
+<div class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tổng thí sinh</p>
+<p class="font-display text-display text-on-background mt-1">245</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container/50 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Điểm trung bình</p>
+<p class="font-display text-display text-on-background mt-1">6.8</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">trending_down</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tỷ lệ dưới trung bình</p>
+<p class="font-display text-display text-on-background mt-1">12%</p>
+</div>
+</div>
+<!-- Chart 1: Bar chart comparing classes -->
+<div class="col-span-1 md:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col h-[400px]">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-h3 text-h3 text-on-background">Điểm trung bình theo lớp</h3>
+<button class="text-primary hover:bg-primary-fixed-dim/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- CSS Bar Chart -->
+<div class="flex-1 flex items-end gap-md sm:gap-lg px-md pb-md relative border-b border-outline-variant/50">
+<!-- Y-axis labels -->
+<div class="absolute left-0 top-0 bottom-md flex flex-col justify-between text-label-sm text-on-surface-variant pr-2">
+<span class="">10</span>
+<span class="">8</span>
+<span class="">6</span>
+<span class="">4</span>
+<span class="">2</span>
+<span class="">0</span>
+</div>
+<!-- Bars Container (offset for y-axis) -->
+<div class="w-full h-full flex items-end justify-around pl-6">
+<!-- Class 1 -->
+<div class="w-12 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t-sm transition-all duration-300 group-hover:bg-primary-fixed-variant" style="height: 72%;"></div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">12A1</span>
+</div>
+<!-- Class 2 -->
+<div class="w-12 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t-sm transition-all duration-300 group-hover:bg-primary-fixed-variant" style="height: 65%;"></div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">12A2</span>
+</div>
+<!-- Class 3 -->
+<div class="w-12 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t-sm transition-all duration-300 group-hover:bg-primary-fixed-variant" style="height: 85%;"></div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">12A3</span>
+</div>
+<!-- Class 4 -->
+<div class="w-12 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t-sm transition-all duration-300 group-hover:bg-primary-fixed-variant" style="height: 58%;"></div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">12A4</span>
+</div>
+<!-- Class 5 -->
+<div class="w-12 flex flex-col items-center group">
+<div class="w-full bg-primary rounded-t-sm transition-all duration-300 group-hover:bg-primary-fixed-variant" style="height: 70%;"></div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">12A5</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Chart 2: Histogram of score distribution -->
+<div class="col-span-1 md:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col h-[400px]">
+<h3 class="font-h3 text-h3 text-on-background mb-lg">Phổ điểm</h3>
+<!-- CSS Histogram -->
+<div class="flex-1 flex items-end gap-xs px-xs pb-md border-b border-outline-variant/50 relative">
+<div class="w-full h-full flex items-end justify-between">
+<!-- score buckets (0-1, 1-2, etc.) -->
+<div class="flex-1 bg-secondary-container rounded-t-sm mx-[1px]" style="height: 2%;" title="0-1"></div>
+<div class="flex-1 bg-secondary-container rounded-t-sm mx-[1px]" style="height: 5%;" title="1-2"></div>
+<div class="flex-1 bg-secondary-container rounded-t-sm mx-[1px]" style="height: 8%;" title="2-3"></div>
+<div class="flex-1 bg-secondary-container rounded-t-sm mx-[1px]" style="height: 15%;" title="3-4"></div>
+<div class="flex-1 bg-secondary-container rounded-t-sm mx-[1px]" style="height: 25%;" title="4-5"></div>
+<div class="flex-1 bg-primary rounded-t-sm mx-[1px]" style="height: 40%;" title="5-6"></div>
+<div class="flex-1 bg-primary rounded-t-sm mx-[1px]" style="height: 65%;" title="6-7"></div>
+<div class="flex-1 bg-primary rounded-t-sm mx-[1px]" style="height: 80%;" title="7-8"></div>
+<div class="flex-1 bg-primary-fixed-variant rounded-t-sm mx-[1px]" style="height: 50%;" title="8-9"></div>
+<div class="flex-1 bg-primary-fixed-variant rounded-t-sm mx-[1px]" style="height: 20%;" title="9-10"></div>
+</div>
+</div>
+<div class="flex justify-between mt-sm px-xs font-label-sm text-label-sm text-on-surface-variant">
+<span class="">0</span>
+<span class="">5</span>
+<span class="">10</span>
+</div>
+</div>
+<!-- List: Các câu hỏi thường sai nhất -->
+<div class="col-span-1 md:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mt-sm">
+<div class="p-lg border-b border-outline-variant bg-surface-bright">
+<h3 class="font-h3 text-h3 text-on-background">Các câu hỏi thường sai nhất</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Cần chú ý ôn tập lại kiến thức cho các phần này.</p>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant">
+<th class="py-sm px-lg font-label-md text-label-md text-on-surface-variant uppercase w-16">Câu</th>
+<th class="py-sm px-lg font-label-md text-label-md text-on-surface-variant uppercase">Nội dung tóm tắt</th>
+
+<th class="py-sm px-lg font-label-md text-label-md text-on-surface-variant uppercase text-right w-32">Tỷ lệ sai</th>
+<th class="py-sm px-lg w-24"></th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-background">
+<!-- Item 1 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface transition-colors">
+<td class="py-md px-lg font-label-md font-bold text-on-background">#42</td>
+<td class="py-md px-lg">Tìm giá trị lớn nhất của hàm số y = (x^2 + x + 1)/(x - 1) trên đoạn [2; 5].</td>
+
+<td class="py-md px-lg text-right font-bold text-error">78%</td>
+<td class="py-md px-lg text-right">
+<button class="text-primary hover:text-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Chi tiết</button>
+</td>
+</tr>
+<!-- Item 2 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface transition-colors">
+<td class="py-md px-lg font-label-md font-bold text-on-background">#38</td>
+<td class="py-md px-lg">Cho hình chóp S.ABCD có đáy là hình vuông cạnh a, SA vuông góc với đáy. Tính thể tích...</td>
+
+<td class="py-md px-lg text-right font-bold text-error">65%</td>
+<td class="py-md px-lg text-right">
+<button class="text-primary hover:text-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Chi tiết</button>
+</td>
+</tr>
+<!-- Item 3 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface transition-colors">
+<td class="py-md px-lg font-label-md font-bold text-on-background">#45</td>
+<td class="py-md px-lg">Giải phương trình log_2(x^2 - 3x + 2) = 1.</td>
+
+<td class="py-md px-lg text-right font-bold text-tertiary">52%</td>
+<td class="py-md px-lg text-right">
+<button class="text-primary hover:text-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Chi tiết</button>
+</td>
+</tr>
+<!-- Item 4 -->
+<tr class="hover:bg-surface transition-colors">
+<td class="py-md px-lg font-label-md font-bold text-on-background">#12</td>
+<td class="py-md px-lg">Tìm họ nguyên hàm của hàm số f(x) = x * e^x.</td>
+
+<td class="py-md px-lg text-right font-bold text-tertiary">48%</td>
+<td class="py-md px-lg text-right">
+<button class="text-primary hover:text-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Chi tiết</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+
+
+</body></html>

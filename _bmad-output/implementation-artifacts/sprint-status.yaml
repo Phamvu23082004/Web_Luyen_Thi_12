@@ -1,0 +1,107 @@
+# generated: 2026-07-16
+# last_updated: 2026-07-16
+# project: Web_OnThi12
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+
+generated: 2026-07-16
+last_updated: 2026-07-16
+project: Web_OnThi12
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Foundation & Authentication
+  epic-1: backlog
+  1-1-project-scaffold-and-docker-infrastructure: backlog
+  1-2-core-data-model-and-account-class-seeding: backlog
+  1-3-global-api-envelope-error-filter-and-validation-baseline: backlog
+  1-4-design-tokens-and-role-aware-app-shell: backlog
+  1-5-email-password-login-with-jwt-and-role-routing: backlog
+  1-6-role-based-access-enforcement-and-isolation: backlog
+  1-7-login-rate-limiting: backlog
+  1-8-password-reset-via-email: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Exam Creation via PDF + AI Parsing
+  epic-2: backlog
+  2-1-exam-schema-and-create-draft-exam-by-pdf-upload: backlog
+  2-2-asynchronous-ai-parsing-worker-gemini-extraction: backlog
+  2-3-gemini-reliability-retry-circuit-breaker-failure-surfacing: backlog
+  2-4-review-screen-with-attention-flags: backlog
+  2-5-confirm-missing-answers: backlog
+  2-6-auto-crop-question-figures: backlog
+  2-7-edit-and-delete-questions-while-draft: backlog
+  2-8-assign-exam-to-classes-with-the-correctness-gate: backlog
+  2-9-list-created-exams-with-submission-rate: backlog
+  2-10-close-an-exam: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Taking Exams & Auto-Grading
+  epic-3: backlog
+  3-1-view-assigned-exams: backlog
+  3-2-start-an-attempt-with-a-server-authoritative-deadline: backlog
+  3-3-submit-and-auto-grade-transactionally: backlog
+  3-4-take-the-exam-one-question-at-a-time-countdown-navigator: backlog
+  3-5-review-detailed-results: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Student Dashboard & Class View
+  epic-4: backlog
+  4-1-personal-student-dashboard: backlog
+  4-2-filter-dashboard-by-subject: backlog
+  4-3-full-results-history: backlog
+  4-4-class-view-with-mini-leaderboard: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Teacher Dashboard & Class Management
+  epic-5: backlog
+  5-1-teacher-class-list: backlog
+  5-2-individual-student-detail: backlog
+  5-3-class-roster-with-drill-in: backlog
+  5-4-class-overview-dashboard-with-at-risk-list: backlog
+  5-5-per-exam-statistics: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Production Deployment
+  epic-6: backlog
+  6-1-production-environment-on-vps-with-nginx-and-ssl: backlog
+  6-2-ci-cd-auto-deploy-with-migration-safety-and-rollback: backlog
+  epic-6-retrospective: optional

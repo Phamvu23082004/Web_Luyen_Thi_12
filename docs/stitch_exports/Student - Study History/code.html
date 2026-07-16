@@ -1,0 +1,506 @@
+<!DOCTYPE html><html lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lịch sử học tập - OnThi12</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e2e1ec",
+                        "outline-variant": "#c4c5d6",
+                        "surface-tint": "#2f52d0",
+                        "on-background": "#1a1b23",
+                        "inverse-surface": "#2f3038",
+                        "on-secondary-fixed-variant": "#005237",
+                        "primary-container": "#496ae8",
+                        "inverse-on-surface": "#f1f0fb",
+                        "secondary-fixed": "#9ef4c9",
+                        "secondary": "#046c4a",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#b8c4ff",
+                        "on-primary-fixed": "#001453",
+                        "tertiary": "#725c00",
+                        "surface-bright": "#fbf8ff",
+                        "secondary-container": "#9bf1c6",
+                        "outline": "#747685",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#e8e7f2",
+                        "on-tertiary-fixed": "#231b00",
+                        "tertiary-fixed": "#ffe082",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#dde1ff",
+                        "on-primary-container": "#fffbff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e2e1ec",
+                        "on-tertiary-fixed-variant": "#564500",
+                        "on-surface": "#1a1b23",
+                        "on-primary-fixed-variant": "#0337b8",
+                        "background": "#fbf8ff",
+                        "surface-dim": "#dad9e4",
+                        "tertiary-fixed-dim": "#ecc228",
+                        "surface-container": "#eeedf8",
+                        "on-secondary-fixed": "#002114",
+                        "primary": "#2c50cd",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#444654",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#cea700",
+                        "secondary-fixed-dim": "#82d8ae",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "surface-container-low": "#f4f2fd",
+                        "surface": "#fbf8ff",
+                        "on-tertiary-container": "#4e3e00",
+                        "on-secondary-container": "#0f704e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-padding-mobile": "20px",
+                        "container-padding-desktop": "40px",
+                        "gutter": "24px",
+                        "section-gap": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Be Vietnam Pro", "sans-serif"],
+                        "label-md": ["Be Vietnam Pro", "sans-serif"],
+                        "headline-lg": ["Be Vietnam Pro", "sans-serif"],
+                        "headline-lg-mobile": ["Be Vietnam Pro", "sans-serif"],
+                        "body-lg": ["Be Vietnam Pro", "sans-serif"],
+                        "label-sm": ["Be Vietnam Pro", "sans-serif"],
+                        "headline-xl": ["Be Vietnam Pro", "sans-serif"],
+                        "headline-md": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl": ["40px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #fbf8ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
+        
+        /* Soft shadows based on design system guidance */
+        .shadow-soft { box-shadow: 0 4px 20px rgba(92, 124, 250, 0.08); }
+        .shadow-hover { box-shadow: 0 8px 30px rgba(92, 124, 250, 0.12); }
+        
+        /* Custom scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f4f2fd; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c4c5d6; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #747685; }
+    </style>
+</head>
+<body class="text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop) -->
+<nav class="bg-surface-container-low w-64 h-screen fixed left-0 top-0 hidden md:flex flex-col py-8 gap-4 px-4 shadow-sm z-30 border-r border-surface-variant">
+<div class="flex items-center gap-3 px-4 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined filled text-headline-md font-headline-md">school</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">OnThi12</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Học tập vui vẻ</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant rounded-xl hover:bg-primary-container/10 transition-colors duration-150 active:scale-95 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">home</span>
+                Trang chủ
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant rounded-xl hover:bg-primary-container/10 transition-colors duration-150 active:scale-95 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">assignment</span>
+                Đề thi
+            </a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-primary-container/10 rounded-xl transition-colors duration-150 active:scale-95 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined filled">analytics</span>
+                Thống kê
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant rounded-xl hover:bg-primary-container/10 transition-colors duration-150 active:scale-95 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">school</span>
+                Lớp học
+            </a>
+</div>
+<div class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant rounded-xl hover:bg-primary-container/10 transition-colors duration-150 active:scale-95 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Cài đặt
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative pb-24 md:pb-0">
+<!-- TopNavBar (Web & Mobile) -->
+<header class="bg-surface/80 backdrop-blur-xl h-16 w-full sticky top-0 z-40 shadow-sm flex justify-between items-center px-6 md:px-10">
+<!-- Mobile Brand -->
+<div class="flex items-center gap-2 md:hidden">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined filled text-[20px]">school</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">OnThi12</span>
+</div>
+<!-- Page Title (Desktop) -->
+<div class="hidden md:block">
+<h2 class="font-headline-md text-headline-md text-on-background">Học sinh Lịch sử học tập (Thân thiện)</h2>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-colors focus-within:ring-2 focus-within:ring-primary relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-error"></span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-variant focus-within:ring-2 focus-within:ring-primary cursor-pointer">
+<img alt="Ảnh đại diện người dùng" class="w-full h-full object-cover" data-alt="A close-up portrait of a cheerful Vietnamese high school student in a soft, bright, modern educational setting, light mode aesthetic, soft pastel background, optimistic mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuConnK9SLxWzz7cbmE5cPrcLVRj3hSBZyVcXdPryGyb8XgGtHzq2y-UXuJWeV8Jpje0WIBKFuGlcqAw-4Z299_HIA-q-a2_DgcUq7I4JIe8DGxdtwIL_KrZeOG7yWhpB7r-S1iXvhQoocm7YpPnqi1hT9uPlN6V_yMLheMMAyO3p2wYTLMx4HcZum7zxOD9BP25xSAxZOBFkNqAZMw0ddwRnax_iB_2SAM27JYJfxsm47JrOwMW-VgcvPQrb1fmzTUxab66P3rxAvh7">
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-container-padding-mobile md:p-container-padding-desktop max-w-[1200px] mx-auto w-full flex flex-col gap-section-gap">
+<!-- Mobile Title -->
+<div class="md:hidden">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background mb-2">Học sinh Lịch sử học tập (Thân thiện)</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Theo dõi sự tiến bộ của bạn từng ngày.</p>
+</div>
+<!-- Summary Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Card 1: Tổng số bài -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 shadow-soft border border-surface-variant relative overflow-hidden group hover:shadow-hover transition-shadow duration-300">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-container/20 rounded-full blur-xl group-hover:bg-primary-container/30 transition-colors duration-500"></div>
+<div class="flex items-center gap-4 mb-4 relative z-10">
+<div class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined filled">assignment_turned_in</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Đã hoàn thành</p>
+<h3 class="font-headline-lg text-headline-lg text-on-background">42 <span class="font-body-md text-body-md text-on-surface-variant font-normal">bài</span></h3>
+</div>
+</div>
+<div class="flex items-center gap-2 relative z-10">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5 tuần này
+                        </span>
+</div>
+</div>
+<!-- Card 2: Điểm trung bình -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 shadow-soft border border-surface-variant relative overflow-hidden group hover:shadow-hover transition-shadow duration-300">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary-container/20 rounded-full blur-xl group-hover:bg-tertiary-container/30 transition-colors duration-500"></div>
+<div class="flex items-center gap-4 mb-4 relative z-10">
+<div class="w-12 h-12 rounded-2xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined filled">star</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Điểm trung bình</p>
+<h3 class="font-headline-lg text-headline-lg text-on-background">8.5 <span class="font-body-md text-body-md text-on-surface-variant font-normal">/10</span></h3>
+</div>
+</div>
+<div class="flex items-center gap-2 relative z-10">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-variant text-on-surface-variant font-label-sm text-label-sm">
+                            Ổn định
+                        </span>
+</div>
+</div>
+<!-- Card 3: Thời gian học -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 shadow-soft border border-surface-variant relative overflow-hidden group hover:shadow-hover transition-shadow duration-300">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-secondary-container/20 rounded-full blur-xl group-hover:bg-secondary-container/30 transition-colors duration-500"></div>
+<div class="flex items-center gap-4 mb-4 relative z-10">
+<div class="w-12 h-12 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined filled">schedule</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Thời gian tự học</p>
+<h3 class="font-headline-lg text-headline-lg text-on-background">124 <span class="font-body-md text-body-md text-on-surface-variant font-normal">giờ</span></h3>
+</div>
+</div>
+<div class="flex items-center gap-2 relative z-10">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span> Chuỗi 12 ngày
+                        </span>
+</div>
+</div>
+</section>
+<!-- Chart Section -->
+<section class="bg-surface-container-lowest rounded-3xl p-6 md:p-8 shadow-soft border border-surface-variant relative overflow-hidden">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background">Biểu đồ tiến độ</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Điểm số các bài thi thử gần đây</p>
+</div>
+<!-- Filters -->
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_2px_0_rgba(0,0,0,0.1)] hover:opacity-90 transition-opacity active:translate-y-[2px] active:shadow-none">
+                            Tất cả
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface font-label-md text-label-md border border-surface-variant hover:bg-surface-variant transition-colors">
+                            Toán
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface font-label-md text-label-md border border-surface-variant hover:bg-surface-variant transition-colors">
+                            Vật Lý
+                        </button>
+</div>
+</div>
+<!-- Chart Canvas Container -->
+<div class="w-full h-[300px] relative">
+<canvas id="progressChart" width="878" height="300" style="display: block; box-sizing: border-box; height: 300px; width: 878px;"></canvas>
+</div>
+</section>
+<!-- History Table Section -->
+<section class="bg-surface-container-lowest rounded-3xl shadow-soft border border-surface-variant overflow-hidden flex flex-col">
+<div class="p-6 border-b border-surface-variant flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<h3 class="font-headline-md text-headline-md text-on-background">Lịch sử làm bài</h3>
+<!-- Search Input -->
+<div class="relative w-full sm:w-auto">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full sm:w-64 pl-10 pr-4 py-2 rounded-xl bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-surface-container-lowest outline-none transition-all font-body-md text-body-md text-on-background placeholder:text-outline" placeholder="Tìm kiếm bài thi..." type="text">
+</div>
+</div>
+<!-- Table Wrapper for Scroll -->
+<div class="overflow-x-auto custom-scrollbar p-2">
+<table class="w-full text-left border-collapse min-w-[700px]">
+<thead>
+<tr class="font-label-md text-label-md text-on-surface-variant border-b border-surface-variant">
+<th class="p-4 font-semibold w-1/3">Tên bài thi</th>
+<th class="p-4 font-semibold">Môn học</th>
+<th class="p-4 font-semibold">Thời gian làm</th>
+<th class="p-4 font-semibold">Điểm số</th>
+<th class="p-4 font-semibold text-right">Hành động</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">functions</span>
+</div>
+<div>
+<p class="font-medium text-on-background group-hover:text-primary transition-colors">Đề thi thử THPTQG 2024 - Đề số 1</p>
+<p class="text-label-sm text-on-surface-variant">Hôm qua, 14:30</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-medium">Toán học</span>
+</td>
+<td class="p-4 text-on-surface-variant">45 phút</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 font-bold text-secondary">
+                                        9.0 <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+</span>
+</td>
+<td class="p-4 text-right">
+<button class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-colors font-label-md text-label-md inline-flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        Xem lại
+                                    </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div>
+<p class="font-medium text-on-background group-hover:text-primary transition-colors">Kiểm tra 1 tiết Chương 3</p>
+<p class="text-label-sm text-on-surface-variant">3 ngày trước</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-medium">Vật lý</span>
+</td>
+<td class="p-4 text-on-surface-variant">30 phút</td>
+<td class="p-4">
+<span class="font-bold text-on-background">7.5</span>
+</td>
+<td class="p-4 text-right">
+<button class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-colors font-label-md text-label-md inline-flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        Xem lại
+                                    </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div>
+<p class="font-medium text-on-background group-hover:text-primary transition-colors">Mini Test Reading Part 1</p>
+<p class="text-label-sm text-on-surface-variant">1 tuần trước</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-medium">Tiếng Anh</span>
+</td>
+<td class="p-4 text-on-surface-variant">15 phút</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 font-bold text-error">
+                                        5.0 <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+</span>
+</td>
+<td class="p-4 text-right">
+<button class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-colors font-label-md text-label-md inline-flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        Xem lại
+                                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Simple) -->
+<div class="p-4 border-t border-surface-variant flex justify-center items-center gap-2">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:bg-surface-container"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-primary-container text-on-primary-container font-label-md">1</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container font-label-md">2</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container font-label-md">3</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-4 pt-2 bg-surface-container-highest dark:bg-inverse-surface shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-3xl md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-variant/50 rounded-2xl transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+            Trang chủ
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-variant/50 rounded-2xl transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">assignment</span>
+            Đề thi
+        </a>
+<!-- Active -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-2 active:scale-90 duration-200 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined filled mb-1">analytics</span>
+            Thống kê
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-variant/50 rounded-2xl transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">school</span>
+            Lớp học
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-variant/50 rounded-2xl transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+            Cài đặt
+        </a>
+</nav>
+<!-- Chart.js Initialization -->
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            // Soft gradient for the chart area
+            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(73, 106, 232, 0.2)'); // primary-container with opacity
+            gradient.addColorStop(1, 'rgba(73, 106, 232, 0)');
+
+            const data = {
+                labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5', 'Tuần 6'],
+                datasets: [{
+                    label: 'Điểm số trung bình',
+                    data: [6.5, 7.0, 6.8, 7.5, 8.2, 8.5],
+                    borderColor: '#2c50cd', // primary
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#2c50cd',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true,
+                    tension: 0.4 // Smooth curves
+                }]
+            };
+
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#2f3038', // inverse-surface
+                            titleFont: { family: 'Be Vietnam Pro', size: 14 },
+                            bodyFont: { family: 'Be Vietnam Pro', size: 14 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Điểm: ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: '#e8e7f2', // surface-container-high
+                                drawBorder: false,
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                font: { family: 'Be Vietnam Pro', size: 12 },
+                                color: '#747685', // outline
+                                stepSize: 2
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: { family: 'Be Vietnam Pro', size: 12 },
+                                color: '#747685' // outline
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            };
+
+            new Chart(ctx, config);
+        });
+    </script>
+
+
+</body></html>

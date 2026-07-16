@@ -1,0 +1,349 @@
+<!DOCTYPE html><html class="light" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title class="">Student - Làm bài thi (v1.1)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for Question Navigator */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8e5;
+            border-radius: 10px;
+        }
+        .option-card:hover {
+            border-color: #0058be;
+            background-color: #f2f4f6;
+        }
+        .option-card.active {
+            border-color: #0058be;
+            background-color: #d0e1fb;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface-variant": "#424754",
+                        "on-surface": "#191c1e",
+                        "primary": "#0058be",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary-container": "#2170e4",
+                        "outline": "#727785",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#505f76",
+                        "surface-dim": "#d8dadc",
+                        "surface": "#f7f9fb",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#311400",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c2c6d6",
+                        "tertiary-container": "#b75b00",
+                        "on-secondary-fixed": "#0b1c30",
+                        "secondary-container": "#d0e1fb",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#adc6ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "tertiary": "#924700",
+                        "inverse-surface": "#2d3133",
+                        "surface-container": "#eceef0",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#001a42",
+                        "on-secondary-container": "#54647a",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-fixed-variant": "#004395",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#d3e4fe",
+                        "surface-variant": "#e0e3e5",
+                        "surface-tint": "#005ac2"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "container_max": "1200px",
+                        "sidebar_width": "260px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "h2": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h1": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased flex overflow-hidden">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="hidden md:flex flex-col py-lg w-sidebar_width h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant z-40">
+<div class="px-lg mb-xl">
+<h3 class="text-h3 font-h3 text-primary">OnThi12</h3>
+<p class="text-label-sm text-secondary">Cổng thông tin học thuật</p>
+</div>
+<nav class="flex-1">
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Bảng điều khiển</span>
+</div>
+<!-- Active Tab: Ngân hàng câu hỏi (Simulated as active context for test taking) -->
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer bg-secondary-container text-on-secondary-container border-l-4 border-primary rounded-r-full">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md font-bold">Ngân hàng câu hỏi</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-label-md">Đề thi thử</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md">Phân tích kết quả</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md">Quản lý lớp học</span>
+</div>
+</nav>
+<div class="mt-auto px-lg pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-3 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md">Cài đặt</span>
+</div>
+<div class="flex items-center gap-3 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md">Đăng xuất</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-[260px] flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar (Authority Source: JSON) -->
+<header class="w-full sticky top-0 z-50 bg-surface border-b border-outline-variant">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container_max mx-auto">
+<div class="flex items-center gap-md">
+<span class="text-h2 font-h2 text-primary tracking-tight">OnThi12</span>
+<div class="h-8 w-[1px] bg-outline-variant mx-sm"></div>
+<div>
+<h1 class="font-h3 text-h3 text-on-surface line-clamp-1">Student - Làm bài thi (v1.1)</h1>
+</div>
+</div>
+<!-- Timer Display -->
+<div class="flex items-center gap-md bg-error-container text-on-error-container px-lg py-sm rounded-xl border border-error/20">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+<span class="font-display text-h2 font-bold tabular-nums" id="countdown">41:19</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary cursor-pointer">help_outline</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer">notifications</span>
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a high school student with a focused expression, wearing a clean school uniform. The lighting is bright and even, against a neutral light gray background, reflecting a professional academic portal aesthetic with clean lines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdySAgOSd4IWEsb6xqpdCjfjS3LuAnH24RqsCW8_8Ccd76X0XfpIq5GqYvG0pFjxpcqNwgd37KEHvV53NQkORqcBJy27bbRFDdRA3-Y_d6PnBiZieCFl7-BkNNiGWyWl6JudnR1PhadyFOVomHoRuSAJnhRmtiis1mTJXuwPdIou819BT5-Ucc6hGkROtN01bzpVELosJeBMkFoBv3BUCGJVOles9xabb1XCydjMee7332ZaYml7pc4pzl3EpNEoHSIcMlkcA11NF2">
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 flex overflow-hidden">
+<!-- Left: Question Canvas -->
+<section class="flex-1 p-lg overflow-y-auto bg-surface-bright custom-scrollbar">
+<div class="max-w-[800px] mx-auto space-y-lg pb-xl">
+<!-- Question Header & Content -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm">
+<div class="flex justify-between items-start mb-lg">
+<span class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-md">Câu hỏi 12 / 40</span>
+<button class="text-primary flex items-center gap-xs font-label-md hover:underline">
+<span class="material-symbols-outlined text-[18px]">bookmark</span>
+                                Đánh dấu
+                            </button>
+</div>
+<div class="prose prose-slate max-w-none">
+<h2 class="text-h2 font-h2 text-on-surface mb-lg leading-relaxed">
+                                Một con lắc lò xo gồm một vật nhỏ khối lượng m và lò xo nhẹ có độ cứng k. Con lắc dao động điều hòa với tần số góc là?
+                            </h2>
+<div class="w-full h-64 bg-surface-container rounded-lg flex items-center justify-center border border-dashed border-outline mb-lg">
+<img class="max-h-full" data-alt="A clean, minimalist 2D scientific diagram of a vertical mass-spring system in motion. The design uses crisp blue lines for the spring and a solid slate gray for the mass, set against a pristine white background. The aesthetic is purely academic and instructional, following a modern SaaS education tool style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoHmO8nkHzRfFzoCzFeDkzNhdxL7w0e_lxqL5iGu-e94Y4R-ITOYFyVsD3eSh4tlQkzzrTvN0_uIHn_9k89dzDdgK7f2rnX8IfPA8Ynae4PERg79PMn0nUl9804NYh9N4p3jDSnlPM4SE-Ch4IUe54H-sWzNQ0_gh_t8wOox35gHf-AF1F554bEwljg8gij7lsnHyS08bH2l6ka0aOzCMiZWvhcQpKKHNQaWPQBw_Di22G8ychEelOlc4l3GshikYqMtiHhpdXTiWX">
+</div>
+</div>
+</div>
+<!-- Answer Options (Bento-style layout or high-end vertical cards) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<button class="option-card group flex items-center gap-lg p-lg bg-surface-container-lowest border border-outline-variant rounded-xl transition-all cursor-pointer text-left active">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-primary-container text-on-primary-container font-bold text-h3 border border-primary">A</div>
+<span class="text-body-lg font-body-lg text-on-surface flex-1">$\omega = \sqrt{\frac{k}{m}}$</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<button class="option-card group flex items-center gap-lg p-lg bg-surface-container-lowest border border-outline-variant rounded-xl transition-all cursor-pointer text-left">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant font-bold text-h3 border border-outline-variant group-hover:border-primary">B</div>
+<span class="text-body-lg font-body-lg text-on-surface flex-1">$\omega = 2\pi\sqrt{\frac{m}{k}}$</span>
+</button>
+<button class="option-card group flex items-center gap-lg p-lg bg-surface-container-lowest border border-outline-variant rounded-xl transition-all cursor-pointer text-left">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant font-bold text-h3 border border-outline-variant group-hover:border-primary">C</div>
+<span class="text-body-lg font-body-lg text-on-surface flex-1">$\omega = \frac{1}{2\pi}\sqrt{\frac{k}{m}}$</span>
+</button>
+<button class="option-card group flex items-center gap-lg p-lg bg-surface-container-lowest border border-outline-variant rounded-xl transition-all cursor-pointer text-left">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant font-bold text-h3 border border-outline-variant group-hover:border-primary">D</div>
+<span class="text-body-lg font-body-lg text-on-surface flex-1">$\omega = \sqrt{\frac{m}{k}}$</span>
+</button>
+</div>
+<!-- Navigation Actions -->
+<div class="flex items-center justify-between pt-lg">
+<button class="flex items-center gap-sm px-lg py-md bg-surface-container-lowest border border-outline-variant text-on-surface-variant rounded-xl hover:bg-surface-container-high transition-colors font-label-md">
+<span class="material-symbols-outlined">arrow_back</span>
+                            Câu trước
+                        </button>
+<div class="flex gap-md">
+<button class="flex items-center gap-sm px-lg py-md bg-primary text-on-primary rounded-xl hover:opacity-90 transition-all font-label-md shadow-md">
+                                Câu sau
+                                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Right: Question Navigator Panel -->
+<aside class="w-[320px] bg-surface-container-lowest border-l border-outline-variant flex flex-col h-full">
+<div class="p-lg border-b border-outline-variant bg-surface-container-low">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">OnThi12</h3>
+<div class="flex gap-md text-label-sm">
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="">Đã làm</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-surface-container-highest border border-outline"></span>
+<span class="">Chưa làm</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="">Đánh dấu</span>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-lg custom-scrollbar">
+<div class="grid grid-cols-5 gap-sm">
+<!-- Loop for 40 questions -->
+<!-- Question 1-11: Done (Primary) -->
+<script>
+                            const navigatorContainer = document.currentScript.parentElement;
+                            for (let i = 1; i <= 40; i++) {
+                                let stateClasses = "bg-surface-container-low text-on-surface-variant border-transparent";
+                                if (i < 12) stateClasses = "bg-primary-container text-on-primary-container border-primary shadow-sm";
+                                if (i === 12) stateClasses = "ring-2 ring-primary ring-offset-2 bg-surface-container-lowest text-primary border-primary font-bold";
+                                if (i === 5 || i === 18) stateClasses = "bg-error-container text-on-error-container border-error/30";
+                                
+                                const btn = document.createElement('button');
+                                btn.className = `h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 ${stateClasses}`;
+                                btn.textContent = i;
+                                navigatorContainer.appendChild(btn);
+                            }
+                        </script><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">1</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">2</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">3</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">4</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-error-container text-on-error-container border-error/30">5</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">6</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">7</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">8</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">9</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">10</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-primary-container text-on-primary-container border-primary shadow-sm">11</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 ring-2 ring-primary ring-offset-2 bg-surface-container-lowest text-primary border-primary font-bold">12</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">13</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">14</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">15</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">16</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">17</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-error-container text-on-error-container border-error/30">18</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">19</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">20</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">21</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">22</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">23</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">24</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">25</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">26</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">27</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">28</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">29</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">30</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">31</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">32</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">33</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">34</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">35</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">36</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">37</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">38</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">39</button><button class="h-10 w-full flex items-center justify-center rounded-lg border text-label-md transition-all hover:scale-105 bg-surface-container-low text-on-surface-variant border-transparent">40</button>
+</div>
+</div>
+<!-- Submit Section -->
+<div class="p-lg bg-surface border-t border-outline-variant space-y-md">
+<div class="flex justify-between text-body-sm text-secondary">
+<span class="">Tiến độ hoàn thành:</span>
+<span class="font-bold text-primary">11/40 (28%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[28%] rounded-full"></div>
+</div>
+<button class="w-full py-lg bg-primary text-on-primary font-h3 rounded-xl hover:opacity-90 shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-md">
+                        NỘP BÀI THI
+                        <span class="material-symbols-outlined">send</span>
+</button>
+<p class="text-center text-label-sm text-secondary italic">Kiểm tra kỹ bài làm trước khi nộp</p>
+</div>
+</aside>
+</div>
+<!-- Mobile Navigation (JSON Reference) -->
+<nav class="md:hidden flex justify-around items-center h-16 px-4 fixed bottom-0 w-full z-50 rounded-t-xl bg-surface border-t border-outline-variant shadow-lg">
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm">Trang chủ</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl p-1 px-4 transition-transform active:scale-95">
+<span class="material-symbols-outlined">edit_document</span>
+<span class="font-label-sm">Luyện đề</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-sm">Kết quả</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm">Cá nhân</span>
+</div>
+</nav>
+</main>
+<script>
+        // Micro-interaction: Option selection
+        const options = document.querySelectorAll('.option-card');
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                options.forEach(o => {
+                    o.classList.remove('active', 'border-primary', 'bg-secondary-container');
+                    const indicator = o.querySelector('.material-symbols-outlined:last-child');
+                    if(indicator) indicator.remove();
+                    o.querySelector('div').className = "w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant font-bold text-h3 border border-outline-variant";
+                });
+                
+                opt.classList.add('active', 'border-primary', 'bg-secondary-container');
+                opt.querySelector('div').className = "w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-primary-container text-on-primary-container font-bold text-h3 border border-primary";
+                
+                const checkIcon = document.createElement('span');
+                checkIcon.className = "material-symbols-outlined text-primary";
+                checkIcon.style.fontVariationSettings = "'FILL' 1";
+                checkIcon.textContent = "check_circle";
+                opt.appendChild(checkIcon);
+            });
+        });
+
+        // Simple Timer logic
+        let time = 2721; // 45:21 in seconds
+        const countdownEl = document.getElementById('countdown');
+        setInterval(() => {
+            if(time > 0) {
+                time--;
+                const mins = Math.floor(time / 60);
+                const secs = time % 60;
+                countdownEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    </script>
+
+
+</body></html>

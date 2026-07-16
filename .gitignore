@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# .NET build output
+bin/
+obj/
+*.user
+artifacts/
+
+# Frontend build output
+dist/
+build/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+appsettings.*.local.json
+
+# IDE
+.idea/
+.vs/
+.vscode/settings.json
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+coverage/
+TestResults/
+*.trx
+*.coverage
+coverage.opencover.xml
+lcov.info
+
+# Logs
+*.log
+
+# Misc
+*.tmp

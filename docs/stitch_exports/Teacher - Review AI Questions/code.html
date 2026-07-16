@@ -1,0 +1,374 @@
+<!DOCTYPE html><html class="light" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title class="">Duyệt câu hỏi AI trích xuất - OnThi12</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "on-surface-variant": "#424754",
+                    "on-surface": "#191c1e",
+                    "primary": "#0058be",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-high": "#e6e8ea",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary-container": "#2170e4",
+                    "outline": "#727785",
+                    "primary-fixed": "#d8e2ff",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#505f76",
+                    "surface-dim": "#d8dadc",
+                    "surface": "#f7f9fb",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#311400",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#c2c6d6",
+                    "tertiary-container": "#b75b00",
+                    "on-secondary-fixed": "#0b1c30",
+                    "secondary-container": "#d0e1fb",
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#adc6ff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "tertiary": "#924700",
+                    "inverse-surface": "#2d3133",
+                    "surface-container": "#eceef0",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001a42",
+                    "on-secondary-container": "#54647a",
+                    "background": "#f7f9fb",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary-fixed-variant": "#004395",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-container": "#fefcff",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#d3e4fe",
+                    "surface-variant": "#e0e3e5",
+                    "surface-tint": "#005ac2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "gutter": "20px",
+                    "container_max": "1200px",
+                    "sidebar_width": "260px",
+                    "sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"], "h2": ["Inter"], "label-sm": ["Inter"], "body-md": ["Inter"], "display": ["Inter"], "h3": ["Inter"], "body-md-mobile": ["Inter"], "label-md": ["Inter"], "h1-mobile": ["Inter"], "body-sm": ["Inter"], "h1": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-md-mobile": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "h1-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1": ["30px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .question-card { transition: all 0.2s ease; border: 1px solid #E2E8F0; }
+        .question-card:hover { border-color: #0058be; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col py-lg w-sidebar_width h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant z-40">
+<div class="px-6 mb-8">
+<h1 class="text-h3 font-h3 text-primary">OnThi12</h1>
+<p class="text-label-sm text-on-surface-variant opacity-70">Cổng thông tin học thuật</p>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Bảng điều khiển</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer bg-secondary-container text-on-secondary-container border-l-4 border-primary rounded-r-full transition-all">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Ngân hàng câu hỏi</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span class="font-label-md text-label-md">Đề thi thử</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Phân tích kết quả</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Quản lý lớp học</span>
+</div>
+</nav>
+<div class="px-4 py-4 mt-auto border-t border-outline-variant">
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 cursor-pointer text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Đăng xuất</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="md:ml-[260px] min-h-screen flex flex-col">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-30 w-full h-16 bg-surface border-b border-outline-variant px-gutter flex justify-between items-center">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex flex-col">
+<h2 class="font-h2 text-h2 text-primary tracking-tight">Teacher - Duyệt câu hỏi AI</h2>
+<p class="text-label-sm text-on-surface-variant hidden md:block">Nguồn: Vat Ly 12 Mock Test.pdf (48 câu được tìm thấy)</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface-container-high rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-label-sm font-medium text-on-surface-variant">AI đang tối ưu hóa...</span>
+</div>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2 rounded-lg font-label-md transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span>
+                    Hoàn tất
+                </button>
+</div>
+</header>
+<!-- Content Canvas -->
+<section class="flex-1 p-lg max-w-container_max mx-auto w-full bg-surface-bright">
+<div class="grid grid-cols-1 gap-6">
+<!-- 1. Normal Question -->
+<div class="question-card bg-surface-container-lowest rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-md">Câu 1</span>
+<span class="text-label-sm text-on-surface-variant italic">Mức độ: Thông hiểu</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-error"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-6">
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface mb-4">Trong hiện tượng quang điện, động năng ban đầu cực đại của các electron quang điện không phụ thuộc vào yếu tố nào sau đây?</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="p-3 rounded-lg border border-primary bg-primary/5 flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">A</span>
+<span class="text-body-sm font-medium">Cường độ chùm sáng kích thích</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant hover:border-primary transition-colors flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">B</span>
+<span class="text-body-sm">Tần số của ánh sáng kích thích</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant hover:border-primary transition-colors flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">C</span>
+<span class="text-body-sm">Bản chất kim loại làm catôt</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant hover:border-primary transition-colors flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">D</span>
+<span class="text-body-sm">Bước sóng ánh sáng kích thích</span>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-48 flex-shrink-0">
+<div class="aspect-video lg:aspect-square rounded-lg border border-outline-variant overflow-hidden bg-surface-container-high relative group">
+<img class="w-full h-full object-cover" data-alt="A clean technical diagram of the photoelectric effect, showing light waves hitting a metal surface and electrons being ejected. The illustration is minimalist with professional blue and grey tones, fitting a modern academic software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpmFjgC9qXvsb1fG-mEC1hf-MwvPT0jdq-APPVYWqp6PvQE1kDk4NXS-1HCfJgr1gzWdCLCGwE46lvzzam-0psaIMyugDikVZ76_PpVRdvZkds4it644z1VW-Te4kiKP4sEKZg-xo6xzTplWvED4focarj7jxBshDsd2NW8J49KveE0jcGkSkNz0edgtEVNE9lPPsnWcdUAWiQb23v1OUWxxabBWbGd3YszDHOpfXC01FWCbjkG4lLeOdcEfrREy46u-hcOXmPebUe">
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity gap-2">
+<button class="bg-white p-2 rounded-full"><span class="material-symbols-outlined text-primary" data-icon="zoom_in">zoom_in</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Low Confidence Question -->
+<div class="question-card bg-surface-container-lowest rounded-xl p-md border-2 border-amber-400 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 bg-amber-400 text-on-surface px-4 py-1 font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning">warning</span>
+                        Cần kiểm tra lại
+                    </div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-label-md">Câu 2</span>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+<p class="text-label-sm text-amber-800 font-medium">Lý do: AI không chắc chắn về văn bản trích xuất (Độ tin cậy 45%). Vui lòng soát lại ký tự toán học.</p>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic">Một con lắc lò xo dao động điều hòa với phương trình x = 5cos(10πt - π/3) (cm). Tại t = 0,2s vật đang ở vị trí có li độ bao nhiêu và chuyển động theo chiều nào?</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-60">
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold">A</span>
+<span class="text-body-sm">2.5 cm; Chiều dương</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold">B</span>
+<span class="text-body-sm">2.5 cm; Chiều âm</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex justify-end gap-3">
+<button class="px-4 py-2 text-on-surface-variant font-label-md hover:bg-surface-container-high rounded-lg transition-colors">Bỏ qua</button>
+<button class="px-4 py-2 bg-amber-500 text-white font-label-md hover:bg-amber-600 rounded-lg transition-colors">Xác nhận sửa đổi</button>
+</div>
+</div>
+<!-- 3. Missing Answer Question -->
+<div class="question-card bg-surface-container-lowest rounded-xl p-md border-2 border-red-500 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full font-label-md">Câu 3</span>
+<span class="text-label-sm text-red-500 font-bold">LỖI: THIẾU ĐÁP ÁN</span>
+</div>
+</div>
+<div class="space-y-4">
+<p class="font-body-md text-body-md text-on-surface">Đơn vị của cường độ âm là gì?</p>
+<div class="bg-red-50 p-4 rounded-lg">
+<p class="text-label-md text-red-600 mb-4 font-bold">Chọn đáp án đúng để tiếp tục:</p>
+<div class="flex flex-wrap gap-4">
+<button class="w-14 h-14 rounded-xl border-2 border-outline hover:border-primary hover:text-primary transition-all flex items-center justify-center font-h3">A</button>
+<button class="w-14 h-14 rounded-xl border-2 border-outline hover:border-primary hover:text-primary transition-all flex items-center justify-center font-h3">B</button>
+<button class="w-14 h-14 rounded-xl border-2 border-outline hover:border-primary hover:text-primary transition-all flex items-center justify-center font-h3">C</button>
+<button class="w-14 h-14 rounded-xl border-2 border-outline hover:border-primary hover:text-primary transition-all flex items-center justify-center font-h3">D</button>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="text-body-sm text-on-surface-variant">A. Ben (B)</span>
+<span class="text-body-sm text-on-surface-variant">B. Đề-xi-ben (dB)</span>
+<span class="text-body-sm text-on-surface-variant">C. Oát trên mét vuông (W/m²)</span>
+<span class="text-body-sm text-on-surface-variant">D. Ni-u-tơn trên mét vuông (N/m²)</span>
+</div>
+</div>
+</div>
+<!-- 4. Question with Extracted Illustration -->
+<div class="question-card bg-surface-container-lowest rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-md">Câu 4</span>
+</div>
+<span class="flex items-center gap-1 text-green-600 font-label-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="image">image</span> 
+                            Đã trích xuất ảnh
+                        </span>
+</div>
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex-1 space-y-4">
+<p class="font-body-md text-body-md text-on-surface">Quan sát đồ thị li độ - thời gian của một vật dao động điều hòa như hình vẽ bên. Chu kì dao động của vật là:</p>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-xs font-bold flex items-center justify-center">A</span>
+<span class="text-body-sm">0,1 s</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-xs font-bold flex items-center justify-center">B</span>
+<span class="text-body-sm">0,2 s</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-xs font-bold flex items-center justify-center">C</span>
+<span class="text-body-sm">0,4 s</span>
+</div>
+<div class="p-3 rounded-lg border border-outline-variant flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-xs font-bold flex items-center justify-center">D</span>
+<span class="text-body-sm">0,8 s</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-64">
+<div class="p-2 border border-primary/20 bg-primary/5 rounded-xl">
+<div class="aspect-video rounded-lg overflow-hidden mb-3 border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-quality scan of a physics wave graph showing displacement over time. The graph is clear with visible axis labels. The style is that of a professional printed examination paper, isolated on a light gray background to emphasize clarity for education software." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuRDgEewg0CXKU-k_uqcLiFwa6PBOvsiKMue71KHn_QY1FNNFT1f-LMY_jACMl6xgNNb-Ui-krAA2QEewzoWjxkXF7gvhL8R4Q-nyo1N7JgqCpxkzL4k04UwIuylrRkWLs7zIKsy5GFCY2W_yWFjne_1uP_vljLEQ8VpiYN59h_rXmkcDodmKpy4PbJVee1GZ6zYUm-jgh6pZcIRiQoajBSGbVG4oCCksCNVQRrRdunArE78c19-95IdvZUIonb-6GiKaekHqhnmYr">
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-primary text-white text-label-sm font-bold rounded-lg hover:bg-primary-container transition-colors">Xác nhận ảnh</button>
+<button class="px-3 py-2 border border-error text-error rounded-lg hover:bg-error/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Margin for Floating Actions or Spacing -->
+<div class="h-20"></div>
+</section>
+<!-- Fixed Summary Bar for Mobile / Floating -->
+<div class="fixed bottom-6 right-6 flex flex-col gap-3 md:hidden">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface border-t border-outline-variant shadow-lg flex justify-around items-center h-16 px-4">
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-[10px]">Trang chủ</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl p-1 transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="edit_document">edit_document</span>
+<span class="font-label-sm text-[10px]">Luyện đề</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-label-sm text-[10px]">Kết quả</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-[10px]">Cá nhân</span>
+</div>
+</nav>
+<script>
+        // Simple Interaction simulation
+        document.querySelectorAll('.question-card button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if(this.textContent.includes('check')) {
+                    const card = this.closest('.question-card');
+                    card.style.opacity = '0.5';
+                    card.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+    </script>
+
+
+</body></html>
