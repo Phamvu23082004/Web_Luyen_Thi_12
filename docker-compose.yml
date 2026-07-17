@@ -1,0 +1,116 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: onthi12
+      POSTGRES_PASSWORD: onthi12
+      POSTGRES_DB: onthi12
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onthi12 -d onthi12"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: sh -c "npx prisma generate && npm run start:dev"
+    env_file:
+      # Supplies GEMINI_API_KEY / JWT_SECRET / JWT_EXPIRES_IN / EMAIL_PROVIDER_API_KEY.
+      # Optional so a fresh clone runs before anyone copies .env.example to .env.
+      # The `environment:` block below overrides any connection URLs it may contain,
+      # so the container always uses compose service names, never localhost.
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://onthi12:onthi12@postgres:5432/onthi12?schema=public
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      PORT: 3000
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+      # api and worker share this bind mount, so each needs private build
+      # output — otherwise their concurrent `prisma generate` and `nest --watch`
+      # runs race on the same files (ENOENT / MODULE_NOT_FOUND).
+      # nest-cli.json sets deleteOutDir: false because Nest cannot rmdir the
+      # /app/dist mount point (EBUSY on every start).
+      - /app/node_modules
+      - /app/generated
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: sh -c "npx prisma generate && npm run start:dev -- --entryFile worker"
+    env_file:
+      # Supplies GEMINI_API_KEY / JWT_SECRET / JWT_EXPIRES_IN / EMAIL_PROVIDER_API_KEY.
+      # Optional so a fresh clone runs before anyone copies .env.example to .env.
+      # The `environment:` block below overrides any connection URLs it may contain,
+      # so the container always uses compose service names, never localhost.
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://onthi12:onthi12@postgres:5432/onthi12?schema=public
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      WORKER: "true"
+      NODE_ENV: development
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+      # api and worker share this bind mount, so each needs private build
+      # output — otherwise their concurrent `prisma generate` and `nest --watch`
+      # runs race on the same files (ENOENT / MODULE_NOT_FOUND).
+      # nest-cli.json sets deleteOutDir: false because Nest cannot rmdir the
+      # /app/dist mount point (EBUSY on every start).
+      - /app/node_modules
+      - /app/generated
+      - /app/dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
