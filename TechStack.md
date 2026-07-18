@@ -30,7 +30,7 @@ Mỗi service (Auth, Exam, Submission, Dashboard, AI Parsing) là 1 module NestJ
 
 | Công nghệ | Vai trò |
 |---|---|
-| **PostgreSQL 16** | Database chính — hỗ trợ JSON column (options câu hỏi), transaction mạnh (NFR-04) |
+| **PostgreSQL 18** | Database chính — hỗ trợ JSON column (options câu hỏi), transaction mạnh (NFR-04) |
 | **Prisma ORM** | Type-safe query, tự sinh migration, schema dễ đọc |
 | **Redis** | Cache dashboard (9.1), rate limiting (9.6) |
 
