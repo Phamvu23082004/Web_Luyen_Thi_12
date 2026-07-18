@@ -2,10 +2,12 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import Redis from 'ioredis';
 import { AppModule } from './app.module';
+import { configureApp } from './common/configure-app';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+  configureApp(app);
   app.setGlobalPrefix('api');
 
   const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');

@@ -52,7 +52,7 @@ development_status:
   epic-1: in-progress
   1-1-project-scaffold-and-docker-infrastructure: done
   1-2-core-data-model-and-account-class-seeding: done
-  1-3-global-api-envelope-error-filter-and-validation-baseline: backlog
+  1-3-global-api-envelope-error-filter-and-validation-baseline: done
   1-4-design-tokens-and-role-aware-app-shell: backlog
   1-5-email-password-login-with-jwt-and-role-routing: backlog
   1-6-role-based-access-enforcement-and-isolation: backlog
