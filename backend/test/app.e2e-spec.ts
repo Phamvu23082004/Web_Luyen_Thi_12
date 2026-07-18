@@ -4,6 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppController } from './../src/app.controller';
 import { AppService } from './../src/app.service';
+import { configureApp } from './../src/common/configure-app';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -15,6 +16,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    configureApp(app);
     app.setGlobalPrefix('api');
     await app.init();
   });

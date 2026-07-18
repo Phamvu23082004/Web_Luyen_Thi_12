@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('health', () => {
-    it('should return the ok status wrapped in the data envelope', () => {
-      expect(appController.getHealth()).toEqual({ data: { status: 'ok' } });
+    it('should return the raw ok status (envelope wrap is applied by the global interceptor, not the controller)', () => {
+      expect(appController.getHealth()).toEqual({ status: 'ok' });
     });
   });
 });
