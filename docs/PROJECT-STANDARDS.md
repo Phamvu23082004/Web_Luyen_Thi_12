@@ -64,7 +64,7 @@ Minimize teachers' data-entry effort via AI parsing, while giving students one p
 | UI / Styling | TailwindCSS + shadcn/ui | Semantic color palette green/yellow/red (SRS §5.3) |
 | Charts | Recharts | DASH-01, DASH-02 |
 | Data fetching | TanStack Query (React Query) | Client cache, auto refetch |
-| Database | PostgreSQL | 16 — JSON column for options, strong transactions (NFR-04) |
+| Database | PostgreSQL | 18 — JSON column for options, strong transactions (NFR-04) |
 | ORM / data access | Prisma | Type-safe, auto migrations |
 | Cache | Redis | Dashboard (§9.1), rate limiting (§9.6) |
 | Message queue | RabbitMQ (+ amqplib) | Async AI parsing + dashboard (§9.2) |
@@ -350,3 +350,4 @@ The skeleton's "required files absent" row is **resolved** now that the stack is
 | 2026-07-15 | Filled entirely from SRS v1.1 + TechStack for OnThi12 (replaced skeleton) | phamquangvu2308 |
 | 2026-07-15 | Added BMad-format PRD distilled from SRS (`_bmad-output/planning-artifacts/prds/prd-Web_OnThi12-2026-07-15/`); §11 index and §12 BMad-Artifacts PRD row now point to it | Admin |
 | 2026-07-16 | §6 — extended the error envelope with an optional `errorCode` (mirrors AD-16); rule: centralized `SCREAMING_SNAKE_CASE` constants, only for multi-cause business errors, FE branches on code not message | Admin |
+| 2026-07-17 | §2 — PostgreSQL 16 → 18, matching Story 1.1's AC 3 and the `postgres:18` image the scaffold actually runs (`TechStack.md` §3 updated to match) | Admin (code review of story-1.1) |

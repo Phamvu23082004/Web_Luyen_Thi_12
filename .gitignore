@@ -15,6 +15,9 @@ dist/
 build/
 out/
 
+# Prisma generated client
+backend/generated/
+
 # Environment
 .env
 .env.local
