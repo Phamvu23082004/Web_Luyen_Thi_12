@@ -12,3 +12,50 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// Role values match the JWT `role` claim (AD-17) so login reads the DB value
+// straight into the token with no mapping. Keep them lowercase.
+enum Role {
+  student
+  teacher
+}
+
+// Owned by the `auth` module (AD-05). Server-generated cuid ids are the
+// project-wide id convention — every future table follows this.
+model User {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  passwordHash String @map("password_hash")
+  role         Role
+
+  // Back-relations
+  classesTaught  Class[]        // a teacher owns many classes
+  enrollments    ClassStudent[] // a student is enrolled in many classes
+
+  @@map("users")
+}
+
+// Owned by the `class` module (AD-05).
+model Class {
+  id        String @id @default(cuid())
+  name      String
+  teacherId String @map("teacher_id")
+
+  teacher  User           @relation(fields: [teacherId], references: [id])
+  students ClassStudent[]
+
+  @@map("classes")
+}
+
+// Join table (owned by the `class` module). Composite PK on (class_id, student_id).
+model ClassStudent {
+  classId   String @map("class_id")
+  studentId String @map("student_id")
+
+  class   Class @relation(fields: [classId], references: [id])
+  student User  @relation(fields: [studentId], references: [id])
+
+  @@id([classId, studentId])
+  @@map("class_students")
+}
