@@ -8,6 +8,8 @@ obj/
 *.user
 artifacts/
 
+backend/generated/
+
 # Frontend build output
 dist/
 build/
