@@ -131,6 +131,20 @@
 
   /* max-w-app = the 1200px readable content cap (--container-* feeds max-w-*) */
   --container-app: 1200px;
+  /* Restores Tailwind default max-w-xs/sm/md/lg/xl.
+     Plain-prose comment only: this theme block parser trips on quotes,
+     apostrophes and curly braces inside comments, even though they are
+     valid CSS comment content. Without this block, max-w-md/sm/etc silently
+     resolve against the same-named spacing entries above (8/16/24/32px)
+     instead of the real 20/24/28/32/36rem values, since the width utilities
+     fall back to the matching spacing entry when no more specific match
+     exists, and Tailwind ships no default max-width entries for these named
+     sizes (only max-width-prose). Values match Tailwind defaults exactly. */
+  --max-width-xs: 20rem;
+  --max-width-sm: 24rem;
+  --max-width-md: 28rem;
+  --max-width-lg: 32rem;
+  --max-width-xl: 36rem;
 
   /* ---- Radii ----
    * design-system §Shapes: "consistent 10px (0.625rem) corner radius for almost all

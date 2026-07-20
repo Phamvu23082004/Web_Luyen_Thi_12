@@ -9,6 +9,7 @@ import { SubmissionModule } from './modules/submission/submission.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ClassModule } from './modules/class/class.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './common/redis/redis.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     // then the repo-root `.env` that `.env.example` documents and compose loads.
     ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env', '../.env'] }),
     PrismaModule,
+    RedisModule,
     AuthModule,
     ExamModule,
     AiParsingModule,

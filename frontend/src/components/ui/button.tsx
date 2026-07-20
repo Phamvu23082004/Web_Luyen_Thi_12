@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
-type Size = 'sm' | 'md'
+type Size = 'sm' | 'md' | 'lg'
 
 // Hand-rolled variant map (Decision 1 — no shadcn CLI for a single primitive).
 // 10px radius comes from the default `rounded` token (design-system §Shapes).
@@ -21,6 +21,8 @@ const VARIANTS: Record<Variant, string> = {
 const SIZES: Record<Size, string> = {
   sm: 'h-9 px-md text-label-md',
   md: 'h-11 px-lg text-body-md',
+  // Full-width "hero" contexts (e.g. a full-page auth form's submit button).
+  lg: 'h-14 px-xl text-body-lg',
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

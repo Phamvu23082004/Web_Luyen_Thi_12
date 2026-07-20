@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router'
 import { Brand, Sidebar } from './sidebar'
 import { BottomNav } from './bottom-nav'
-import { DevRoleToggle } from './dev-role-toggle'
+import { LogoutButton } from './logout-button'
 
 /**
  * Role-aware application shell (AC 2 & 3).
@@ -19,9 +19,10 @@ export function AppShell() {
       <Sidebar />
 
       <div className="flex min-h-dvh flex-col md:ml-[var(--width-sidebar)]">
-        {/* Compact mobile top bar (brand only) — sidebar carries the brand on desktop. */}
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-outline-variant bg-surface/90 px-md backdrop-blur md:hidden">
+        {/* Compact mobile top bar (brand + logout) — sidebar carries both on desktop. */}
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant bg-surface/90 px-md backdrop-blur md:hidden">
           <Brand />
+          <LogoutButton variant="icon" />
         </header>
 
         {/* px-md (16px) margins on mobile per AC 3; roomier on desktop. pb clears the bottom nav. */}
@@ -33,7 +34,6 @@ export function AppShell() {
       </div>
 
       <BottomNav />
-      <DevRoleToggle />
     </div>
   )
 }

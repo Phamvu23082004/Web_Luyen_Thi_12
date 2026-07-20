@@ -1,16 +1,24 @@
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
-import { RoleProvider } from '../lib/role-provider'
+import { AuthProvider } from '../providers/auth-provider'
 import { NAV_BY_ROLE } from '../lib/nav-config'
-import type { Role } from '../lib/role-context'
+import type { Role } from '../contexts/auth-context'
 import { Sidebar } from './sidebar'
+
+/** Builds a fake (unsigned) access token whose payload decodes to the given role. */
+function fakeAccessToken(role: Role): string {
+  const payload = btoa(JSON.stringify({ role })).replace(/\+/g, '-').replace(/\//g, '_')
+  return `header.${payload}.signature`
+}
 
 function renderSidebar(role: Role) {
   return render(
     <MemoryRouter>
-      <RoleProvider initialRole={role}>
+      <AuthProvider
+        initialTokens={{ accessToken: fakeAccessToken(role), refreshToken: 'refresh-token' }}
+      >
         <Sidebar />
-      </RoleProvider>
+      </AuthProvider>
     </MemoryRouter>,
   )
 }

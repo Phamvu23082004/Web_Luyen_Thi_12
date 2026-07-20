@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Đăng nhập | OnThi12</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#2f52d0",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#0337b8",
+                    "on-primary-fixed": "#001453",
+                    "on-tertiary-container": "#4e3e00",
+                    "surface-container-low": "#f4f2fd",
+                    "on-background": "#1a1b23",
+                    "on-tertiary-fixed-variant": "#564500",
+                    "on-secondary-fixed-variant": "#005237",
+                    "secondary-container": "#9bf1c6",
+                    "primary": "#2c50cd",
+                    "outline": "#747685",
+                    "surface-bright": "#fbf8ff",
+                    "surface-container": "#eeedf8",
+                    "outline-variant": "#c4c5d6",
+                    "on-primary": "#ffffff",
+                    "background": "#fbf8ff",
+                    "tertiary-container": "#cea700",
+                    "surface-variant": "#e2e1ec",
+                    "primary-fixed": "#dde1ff",
+                    "on-surface": "#1a1b23",
+                    "surface-dim": "#dad9e4",
+                    "tertiary-fixed-dim": "#ecc228",
+                    "tertiary-fixed": "#ffe082",
+                    "surface-container-high": "#e8e7f2",
+                    "primary-container": "#496ae8",
+                    "inverse-surface": "#2f3038",
+                    "on-secondary-fixed": "#002114",
+                    "on-surface-variant": "#444654",
+                    "surface": "#fbf8ff",
+                    "inverse-on-surface": "#f1f0fb",
+                    "on-tertiary-fixed": "#231b00",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#0f704e",
+                    "tertiary": "#725c00",
+                    "secondary": "#046c4a",
+                    "surface-container-highest": "#e2e1ec",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#b8c4ff",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#fffbff",
+                    "secondary-fixed-dim": "#82d8ae",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#9ef4c9",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#b8c4ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px",
+                    "custom": "24px"
+            },
+            "spacing": {
+                    "section-gap": "64px",
+                    "container-padding-desktop": "40px",
+                    "gutter": "24px",
+                    "container-padding-mobile": "20px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Be Vietnam Pro"],
+                    "headline-lg-mobile": ["Be Vietnam Pro"],
+                    "label-sm": ["Be Vietnam Pro"],
+                    "label-md": ["Be Vietnam Pro"],
+                    "headline-md": ["Be Vietnam Pro"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-lg": ["Be Vietnam Pro"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .custom-shadow {
+        box-shadow: 0 10px 30px -5px rgba(44, 80, 205, 0.08);
+      }
+      .split-screen-container {
+        min-height: 100vh;
+        display: flex;
+      }
+      .left-panel {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+      }
+      .right-panel {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+      }
+      @media (max-width: 768px) {
+        .split-screen-container {
+          flex-direction: column;
+        }
+        .left-panel {
+          height: 300px;
+          flex: none;
+        }
+        .right-panel {
+          padding: 20px;
+        }
+      }
+    </style>
+</head>
+<body class="bg-surface">
+<main class="split-screen-container">
+<!-- Left Panel: Illustration & Slogan -->
+<section class="left-panel hidden md:flex items-center justify-center bg-primary-container relative">
+
+<div class="relative z-10 w-full h-full flex flex-col items-center justify-center p-12 text-center text-on-primary-container">
+<div class="mb-8 w-full max-w-md aspect-square rounded-[32px] overflow-hidden shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+<div class="w-full h-full bg-cover bg-center" data-alt="A high-quality 3D digital illustration of a modern creative study desk. The scene features a sleek laptop showing an educational dashboard, floating holographic geometric shapes, colorful stacked books, and a warm desk lamp. The lighting is soft and golden, creating a peaceful and inspiring atmosphere. The style is soft minimalism with a palette of pastel blues, whites, and light wood textures, perfectly aligned with a premium light-mode educational brand." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1NU31fTwLPMa6mZ2HJkPwYDSx20FhJWD4c9aQQTN46jCBognKiUK6Jr0OZsaNF-WckC8xqQOHFW2KWsqqtj72X_bwQDUbzaZM1DvTYTu_UQBZ7gYeNn7vI5I6QpuX364KNsQQ8h1rDI84ewjIV_0lqgp7CJllUj9r25AQlPiyQ7HjbTb8FezMZe-G6Sg_TajTwin7ndHhl2iRNPrDvp42xZXbwgfoT1joUBt8AuF2usidra3uACpEH475wPWPPFoCuqW1HAvBPc_v')">
+</div>
+</div>
+<h1 class="font-headline-xl text-headline-xl mb-4 tracking-tight">OnThi12</h1>
+<p class="font-body-lg text-body-lg max-w-sm font-medium italic opacity-90">
+                    "Đồng hành cùng sĩ tử chinh phục ước mơ"
+                </p>
+<!-- Decorative elements -->
+<div class="absolute top-10 left-10 opacity-20 transform -rotate-12">
+<span class="material-symbols-outlined text-[80px]">school</span>
+</div>
+<div class="absolute bottom-10 right-10 opacity-20 transform rotate-12">
+<span class="material-symbols-outlined text-[80px]">auto_stories</span>
+</div>
+</div>
+</section>
+<!-- Right Panel: Login Form -->
+<section class="right-panel bg-surface-bright">
+<div class="w-full max-w-md">
+<!-- Brand Mobile Header -->
+<div class="md:hidden flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-primary text-3xl font-bold">school</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">OnThi12</span>
+</div>
+<div class="text-left mb-10">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Chào mừng bạn đến với OnThi12</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Vui lòng đăng nhập để tiếp tục hành trình học tập.</p>
+</div>
+<form class="space-y-6">
+<!-- Email / Username Input -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant ml-2" for="login-id">Email hoặc Tên đăng nhập</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+<input class="w-full h-14 pl-12 pr-4 bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-custom font-body-md text-body-md transition-all outline-none custom-shadow" id="login-id" placeholder="example@email.com" type="text"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant ml-2" for="password">Mật khẩu</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full h-14 pl-12 pr-12 bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-custom font-body-md text-body-md transition-all outline-none custom-shadow" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Options -->
+<div class="flex items-center justify-between px-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-5 h-5 rounded-md border-outline text-primary focus:ring-primary/20 transition-all" type="checkbox"/>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface">Ghi nhớ đăng nhập</span>
+</label>
+<a class="font-label-md text-label-md text-primary hover:underline font-semibold" href="#">Quên mật khẩu?</a>
+</div>
+<!-- Login Button -->
+<button class="w-full h-14 bg-primary text-on-primary font-headline-md text-[18px] rounded-custom shadow-lg shadow-primary/20 hover:bg-primary-container hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
+                        Đăng nhập
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<!-- Divider -->
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink mx-4 font-label-sm text-label-sm text-outline-variant uppercase tracking-widest">Hoặc đăng nhập với</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Social Login -->
+<button class="w-full h-14 bg-white border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-custom flex items-center justify-center gap-3 hover:bg-surface-container transition-all custom-shadow active:scale-95" type="button">
+<img alt="Google Logo" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn5jBk-aCR8jGhUZLQ4PZWbNooPH3KaVZB_H4ggxEGHnwYny8n9bMevNZLpap3cVIT3ys4zemHhwux67V2IrlSRBnD9DqguvQKk3L1BKT3Bix2jsaI-DlEJzR_SWdf0lUOpz55wDROzDUwOcHayaZAV93maTp0SBKWC_3GErxkTXUROqz47mOr8uvSEAulILN-axPf7pTt81wEGj11XHYEXKP63-wewmW5FuDtjvjnvp2RKHFq6abFEoCh0FztRGfuGKlWixOBm_IM"/>
+                        Tiếp tục với Google
+                    </button>
+</form>
+<!-- Footer Link -->
+<div class="mt-10 text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Chưa có tài khoản? 
+                        <a class="text-primary font-bold hover:underline ml-1" href="#">Đăng ký ngay</a>
+</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Background Decoration for Mobile -->
+<div class="md:hidden fixed top-0 right-0 -z-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="md:hidden fixed bottom-0 left-0 -z-10 w-48 h-48 bg-tertiary/5 rounded-full blur-3xl"></div>
+<script>
+        // Micro-interaction for form labels and focus states
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.previousElementSibling.classList.add('text-primary');
+            });
+            input.addEventListener('blur', () => {
+                if (input.value === '') {
+                    input.parentElement.previousElementSibling.classList.remove('text-primary');
+                }
+            });
+        });
+
+        // Toggle password visibility
+        const toggleBtn = document.querySelector('button[type="button"] span.material-symbols-outlined');
+        const passInput = document.getElementById('password');
+        if(toggleBtn && passInput) {
+            toggleBtn.parentElement.addEventListener('click', () => {
+                const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passInput.setAttribute('type', type);
+                toggleBtn.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        }
+    </script>
+</body></html>

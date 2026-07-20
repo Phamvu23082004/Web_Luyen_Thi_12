@@ -1,7 +1,9 @@
 import { createBrowserRouter } from 'react-router'
 import { AppShell } from '../components/app-shell'
+import { LoginPage } from '../features/auth/login-page'
 import { NAV_BY_ROLE } from '../lib/nav-config'
 import { PlaceholderPage } from './placeholder-page'
+import { RequireAuth } from './require-auth'
 import { RootRedirect } from './root-redirect'
 
 // Every role-scoped destination becomes a placeholder route under the AppShell
@@ -14,16 +16,23 @@ const destinations = [
 ]
 
 export const router = createBrowserRouter([
+  // Public — outside AppShell, no sidebar.
+  { path: '/login', element: <LoginPage /> },
   {
-    element: <AppShell />,
+    element: <RequireAuth />,
     children: [
-      { index: true, element: <RootRedirect /> },
-      ...destinations.map((d) => ({
-        // child paths are relative to the layout route — strip the leading slash
-        path: d.to.replace(/^\//, ''),
-        element: <PlaceholderPage title={d.label} mockup={d.mockup} />,
-      })),
-      { path: '*', element: <PlaceholderPage title="Không tìm thấy trang" /> },
+      {
+        element: <AppShell />,
+        children: [
+          { index: true, element: <RootRedirect /> },
+          ...destinations.map((d) => ({
+            // child paths are relative to the layout route — strip the leading slash
+            path: d.to.replace(/^\//, ''),
+            element: <PlaceholderPage title={d.label} mockup={d.mockup} />,
+          })),
+          { path: '*', element: <PlaceholderPage title="Không tìm thấy trang" /> },
+        ],
+      },
     ],
   },
 ])
