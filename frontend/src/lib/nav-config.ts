@@ -9,7 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type { Role } from './role-context'
+import type { Role } from '../contexts/auth-context'
 
 /**
  * Role → navigation destinations (AC 2 — role-scoped nav).

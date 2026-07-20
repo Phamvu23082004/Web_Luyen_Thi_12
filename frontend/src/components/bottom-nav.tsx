@@ -1,5 +1,5 @@
 import { NAV_BY_ROLE } from '../lib/nav-config'
-import { useRole } from '../lib/use-role'
+import { useRole } from '../hooks/use-role'
 import { NavItem } from './nav-item'
 
 /**

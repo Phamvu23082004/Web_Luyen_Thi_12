@@ -1,11 +1,10 @@
 import { Navigate } from 'react-router'
-import { useRole } from '../lib/use-role'
+import { useRole } from '../hooks/use-role'
 
 /**
- * Provisional index landing: sends `/` to the current role's home.
- *
- * TEMPORARY — Story 1.5 replaces this with real post-login role routing. Kept tiny
- * and behind the same useRole() seam so the swap is contained.
+ * Index landing: sends `/` to the current role's home. Also where the login
+ * page's post-login navigate('/') lands, so it's the one place role-routing
+ * logic lives (AC 1).
  */
 export function RootRedirect() {
   const role = useRole()

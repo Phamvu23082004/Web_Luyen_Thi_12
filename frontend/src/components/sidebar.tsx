@@ -1,5 +1,6 @@
 import { NAV_BY_ROLE } from '../lib/nav-config'
-import { useRole } from '../lib/use-role'
+import { useRole } from '../hooks/use-role'
+import { LogoutButton } from './logout-button'
 import { NavItem } from './nav-item'
 
 /** Brand block reused by the desktop sidebar and the mobile drawer header. */
@@ -32,6 +33,7 @@ export function SidebarNav() {
         {nav.footer.map((d) => (
           <NavItem key={d.to} to={d.to} label={d.label} icon={d.icon} />
         ))}
+        <LogoutButton />
       </nav>
     </>
   )
