@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import {
   ArrowRight,
   BookOpen,
@@ -22,8 +22,8 @@ const GENERIC_ERROR = 'Email hoặc mật khẩu không đúng'
  * (split-screen composition + hero illustration side) but rebuilt on this
  * project's real design tokens (Inter, existing color palette, Button/Input
  * primitives, lucide icons — no external image/font CDN) and with the
- * mockup's out-of-scope affordances (remember-me, forgot-password link, Google
- * login, sign-up link) removed — none exist as features in this story/SRS.
+ * mockup's still-out-of-scope affordances (remember-me, Google login, sign-up
+ * link) removed — the forgot-password link is wired below (Story 1.8).
  */
 export function LoginPage() {
   const { login } = useAuth()
@@ -144,6 +144,12 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <Link
+                to="/forgot-password"
+                className="block text-right text-label-md text-primary hover:underline"
+              >
+                Quên mật khẩu?
+              </Link>
             </div>
 
             {error && (

@@ -225,6 +225,10 @@ Follows Tier 1 `08-Quality-Gates.md`. Prioritize high-risk areas over blanket co
 | `JWT_SECRET` | JWT signing secret | `<random-secret>` | ✅ |
 | `JWT_EXPIRES_IN` | Token lifetime | `1d` | ✅ |
 | `NODE_ENV` | Environment | `development` / `production` | ✅ |
+| `EMAIL_PROVIDER_API_KEY` | Transactional email provider key (Resend) — **backend only**, never exposed to the frontend. Password reset (AUTH-03) silently stops delivering without it. | `re_...` | ✅ |
+| `EMAIL_FROM_ADDRESS` | Sender address on reset emails. Resend's shared `onboarding@resend.dev` only delivers to the account's own registered address until a custom domain is verified. | `onboarding@resend.dev` | ✅ |
+| `PASSWORD_RESET_TOKEN_TTL_MINUTES` | Reset-link validity window. Falls back to 30 when absent, blank, or non-numeric. | `30` | ✅ |
+| `FRONTEND_BASE_URL` | Origin used to build the reset link (`${FRONTEND_BASE_URL}/reset-password?token=…`). Becomes the real domain in production. | `http://localhost:5173` | ✅ |
 
 > ⚠️ `GEMINI_API_KEY` must never be hard-coded in source or exposed to the frontend (NFR-09, NFR-10).
 
