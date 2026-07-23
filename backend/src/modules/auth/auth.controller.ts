@@ -1,6 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService, TokenPair } from './auth.service';
 import { Public } from '../../common/decorators/public.decorator';
+import { LoginRateLimitGuard } from '../../common/guards/login-rate-limit.guard';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 
@@ -13,6 +21,8 @@ import { RefreshDto } from './dto/refresh.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // login only — never global, must not touch the submission path (AD-19).
+  @UseGuards(LoginRateLimitGuard)
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
