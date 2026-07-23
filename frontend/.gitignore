@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Visual-fidelity harness output (PROJECT-STANDARDS §14.2) — evidence for a
+# human to compare against docs/stitch_exports/, regenerated on demand.
+visual/__screenshots__
+playwright-report
+test-results
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
