@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-16
-last_updated: 2026-07-23  # story 1.8 → done (code review complete, 25 patches applied)
+last_updated: 2026-07-23  # epic-1 retrospective complete → epic-1 done, 12 action items recorded
 project: Web_OnThi12
 project_key: NOKEY
 tracking_system: file-system
@@ -49,7 +49,7 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Foundation & Authentication
-  epic-1: in-progress
+  epic-1: done
   1-1-project-scaffold-and-docker-infrastructure: done
   1-2-core-data-model-and-account-class-seeding: done
   1-3-global-api-envelope-error-filter-and-validation-baseline: done
@@ -58,7 +58,7 @@ development_status:
   1-6-role-based-access-enforcement-and-isolation: done
   1-7-login-rate-limiting: done
   1-8-password-reset-via-email: done
-  epic-1-retrospective: optional
+  epic-1-retrospective: done
 
   # Epic 2: Exam Creation via PDF + AI Parsing
   epic-2: backlog
@@ -105,3 +105,56 @@ development_status:
   6-1-production-environment-on-vps-with-nginx-and-ssl: backlog
   6-2-ci-cd-auto-deploy-with-migration-safety-and-rollback: backlog
   epic-6-retrospective: optional
+
+# Committed during the Epic 1 retrospective (2026-07-23).
+# Full context: epic-1-retro-2026-07-23.md
+# C* = critical path, must complete before Story 2.1 is created.
+action_items:
+  - epic: 1
+    action: "C1 - Finish and commit the dirty working tree (frontend src/config -> lib move + 4 amended docs); settle the frontend folder convention"
+    owner: "Admin"
+    status: open
+  - epic: 1
+    action: "C2 - Pin Node 24 in the repo: .nvmrc, engines in both package.json files, engine-strict=true in .npmrc"
+    owner: "Amelia (Developer)"
+    status: open
+  - epic: 1
+    action: "C3 - Write the mockup-vs-token reconciliation rule into docs/PROJECT-STANDARDS.md: what is binding (layout, hierarchy, spacing, VI copy, states) vs not (font, icon set, literal hex)"
+    owner: "Sally (UX Designer)"
+    status: open
+  - epic: 1
+    action: "C4 - Make the visual check repeatable: Playwright screenshot pass at 1400px + 390px against the story mockup, as a named Task in every front-end story Verify step"
+    owner: "Sally (UX Designer)"
+    status: open
+  - epic: 1
+    action: "C5 - Stand up the DB-backed test harness (throwaway Postgres + Jest global setup/teardown) replacing PrismaService fakes for transaction-sensitive specs"
+    owner: "Winston (Architect)"
+    status: open
+  - epic: 1
+    action: "P1 - Add validationSchema to ConfigModule.forRoot() so missing/blank/non-numeric env vars fail fast at boot"
+    owner: "Winston (Architect)"
+    status: open
+  - epic: 1
+    action: "P2 - Add a review lens: does any comment/JSDoc/Dev Note claim a property the code does not have (atomicity, constant-time, idempotency, single-use, fencing)"
+    owner: "Amelia (Developer)"
+    status: open
+  - epic: 1
+    action: "P3 - Adopt the test-quality rule: a new test only counts once observed to fail against a deliberately broken implementation"
+    owner: "Amelia (Developer)"
+    status: open
+  - epic: 1
+    action: "P4 - Consolidate the Prisma 7 ESM moduleNameMapper into one shared Jest config fragment (currently duplicated in package.json and test/jest-e2e.json)"
+    owner: "Amelia (Developer)"
+    status: open
+  - epic: 1
+    action: "P5 - Size Epic 2 stories against the 1.8 lesson at create-story: split any story introducing more than one new axis"
+    owner: "John (Product Manager)"
+    status: open
+  - epic: 1
+    action: "D1 - Correct ARCHITECTURE-SPINE.md Deferred section: remove the stale password-reset-email-provider stub bullet resolved by Story 1.8"
+    owner: "Paige (Technical Writer)"
+    status: open
+  - epic: 1
+    action: "D2 - At create-story, carry the inherited debts into Epic 2 story files: 2.3 circuit breaker must be consumable by login-rate-limit.guard; 2.9 resolves enableImplicitConversion + isListPayload"
+    owner: "Amelia (Developer)"
+    status: open
