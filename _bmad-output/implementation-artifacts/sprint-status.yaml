@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-16
-last_updated: 2026-07-23  # epic-1 retrospective complete → epic-1 done, 12 action items recorded
+last_updated: 2026-07-23  # epic-1 retro prep: critical path C1-C5 done (+P3); P1/P2/P4/P5/D1/D2 still open
 project: Web_OnThi12
 project_key: NOKEY
 tracking_system: file-system
@@ -113,23 +113,23 @@ action_items:
   - epic: 1
     action: "C1 - Finish and commit the dirty working tree (frontend src/config -> lib move + 4 amended docs); settle the frontend folder convention"
     owner: "Admin"
-    status: open
+    status: done
   - epic: 1
     action: "C2 - Pin Node 24 in the repo: .nvmrc, engines in both package.json files, engine-strict=true in .npmrc"
     owner: "Amelia (Developer)"
-    status: open
+    status: done
   - epic: 1
     action: "C3 - Write the mockup-vs-token reconciliation rule into docs/PROJECT-STANDARDS.md: what is binding (layout, hierarchy, spacing, VI copy, states) vs not (font, icon set, literal hex)"
     owner: "Sally (UX Designer)"
-    status: open
+    status: done
   - epic: 1
     action: "C4 - Make the visual check repeatable: Playwright screenshot pass at 1400px + 390px against the story mockup, as a named Task in every front-end story Verify step"
     owner: "Sally (UX Designer)"
-    status: open
+    status: done
   - epic: 1
     action: "C5 - Stand up the DB-backed test harness (throwaway Postgres + Jest global setup/teardown) replacing PrismaService fakes for transaction-sensitive specs"
     owner: "Winston (Architect)"
-    status: open
+    status: done
   - epic: 1
     action: "P1 - Add validationSchema to ConfigModule.forRoot() so missing/blank/non-numeric env vars fail fast at boot"
     owner: "Winston (Architect)"
@@ -141,7 +141,7 @@ action_items:
   - epic: 1
     action: "P3 - Adopt the test-quality rule: a new test only counts once observed to fail against a deliberately broken implementation"
     owner: "Amelia (Developer)"
-    status: open
+    status: done  # landed with C5: rule written into PROJECT-STANDARDS §7, control test established in the integration tier
   - epic: 1
     action: "P4 - Consolidate the Prisma 7 ESM moduleNameMapper into one shared Jest config fragment (currently duplicated in package.json and test/jest-e2e.json)"
     owner: "Amelia (Developer)"
