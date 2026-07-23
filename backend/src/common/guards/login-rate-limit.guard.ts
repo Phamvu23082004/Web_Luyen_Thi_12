@@ -8,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
 import { SlidingWindowRateLimiterService } from '../rate-limit/sliding-window-rate-limiter.service';
+import { getPositiveIntConfig } from '../config/positive-int-config';
 
 // Defaults mirror .env.example so a missing env var degrades to a working limit
 // rather than disabling the throttle (or throwing at request time).
@@ -19,27 +20,6 @@ const DEFAULT_ACCOUNT_MAX = 5;
 // runs before the ValidationPipe/@IsEmail, so an overlong `body.email` must be
 // rejected here rather than used as an unbounded Redis key.
 const MAX_EMAIL_LENGTH = 254;
-
-/**
- * Reads a positive-integer config value, falling back to `fallback` when the
- * var is absent, blank, or not a valid positive number. `ConfigService.get<number>`
- * is a compile-time-only cast — real env values are strings — so this parses
- * explicitly instead of trusting the generic.
- */
-function getPositiveIntConfig(
-  config: ConfigService,
-  key: string,
-  fallback: number,
-): number {
-  const raw = config.get<string | number>(key);
-  const parsed = Number(raw);
-  return raw !== undefined &&
-    raw !== '' &&
-    Number.isFinite(parsed) &&
-    parsed > 0
-    ? parsed
-    : fallback;
-}
 
 /**
  * Route-scoped login throttle (AD-19). Two independent Redis sliding windows —

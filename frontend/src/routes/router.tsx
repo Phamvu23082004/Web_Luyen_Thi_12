@@ -1,6 +1,8 @@
 import { createBrowserRouter } from 'react-router'
 import { AppShell } from '../components/app-shell'
 import { LoginPage } from '../features/auth/login-page'
+import { ForgotPasswordPage } from '../features/auth/forgot-password-page'
+import { ResetPasswordPage } from '../features/auth/reset-password-page'
 import { NAV_BY_ROLE } from '../lib/nav-config'
 import type { NavDestination } from '../lib/nav-config'
 import { PlaceholderPage } from './placeholder-page'
@@ -28,6 +30,8 @@ const toRoute = (d: NavDestination) => ({
 export const router = createBrowserRouter([
   // Public — outside AppShell, no sidebar.
   { path: '/login', element: <LoginPage /> },
+  { path: '/forgot-password', element: <ForgotPasswordPage /> },
+  { path: '/reset-password', element: <ResetPasswordPage /> },
   {
     element: <RequireAuth />,
     children: [

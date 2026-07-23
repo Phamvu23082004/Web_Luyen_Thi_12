@@ -30,10 +30,28 @@ model User {
   role         Role
 
   // Back-relations
-  classesTaught  Class[]        // a teacher owns many classes
-  enrollments    ClassStudent[] // a student is enrolled in many classes
+  classesTaught      Class[]              // a teacher owns many classes
+  enrollments        ClassStudent[]       // a student is enrolled in many classes
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+// Owned by the `auth` module (AD-05), same owner as `users`. Separate short-lived
+// token lifecycle from the JWT access/refresh tokens (AD-17) — only tokenHash is
+// stored, never the raw token (mirrors hashRefreshToken() in auth.service.ts).
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 // Owned by the `class` module (AD-05).
