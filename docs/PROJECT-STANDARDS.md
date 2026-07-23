@@ -206,9 +206,28 @@ Follows Tier 1 `08-Quality-Gates.md`. Prioritize high-risk areas over blanket co
 
 ### Test Infrastructure
 
-**Test database**: [x] Docker container (separate PostgreSQL for tests)
+Three backend tiers, each with a distinct job. Put a test in the cheapest tier that can actually prove the property.
+
+| Tier | Command | Database | Proves |
+|---|---|---|---|
+| Unit | `npm test` | mocked | Logic and branch behaviour |
+| E2E | `npm run test:e2e` | faked in-memory | HTTP wiring — global guards, envelope, filter, status codes |
+| **Integration** | `npm run test:integration` | **real, throwaway `postgres:18`** | Properties that only a real database can exhibit |
+
+**Integration tier** (`*.int-spec.ts`, added 2026-07-23 — Epic 1 retrospective action item **C5**). `test/integration/global-setup.ts` starts a Testcontainers `postgres:18` on a random port, applies the committed migrations with `prisma migrate deploy`, and tears it down afterwards. It never touches the docker-compose dev database.
+
+**Use this tier when the property under test is transactional, concurrent, or a constraint** — anything where the answer comes from PostgreSQL rather than from your own code. Specifically: Story 2.2's replace-all-questions plus `parse_generation` fencing (AD-07, AD-21) and Story 3.3's submission idempotency (AD-12, NFR-04, merge-blocking).
+
+**Why the other two tiers are not enough.** A unit test can prove "when `updateMany` reports zero rows affected, we throw." It cannot prove that PostgreSQL *does* report zero rows to the second of two concurrent callers — that is an assumption about isolation level and row locking that no mock can validate, and it is where the real guarantee lives. Story 1.8 shipped a `$transaction` assertion that proved nothing at all because the fake was `(ops) => Promise.all(ops)`.
+
+**Every integration spec carries a control test** — a deliberately broken re-implementation asserted to produce the defect. If the control stops failing, the harness has stopped being able to detect the regression the rest of the file exists to catch. See `test/integration/password-reset-concurrency.int-spec.ts`.
+
+> Prisma 7's client dynamically imports its query compiler, which Jest's VM rejects by default — hence `node --experimental-vm-modules` in the `test:integration` script. Without it every Prisma call in Jest fails with *"A dynamic import callback was invoked without --experimental-vm-modules"*, which is the practical reason every earlier suite faked Prisma.
+
 **Test data**: [x] Factories / seed scripts
 **Coverage target**: No hard number — focus on the Must-Have areas (grading, access control, assignment blocking).
+
+**A test only counts once it has been observed to fail** against a deliberately broken implementation (Epic 1 retrospective action item **P3**). Epic 1 shipped a vacuously-true assertion in Story 1.7, and in Story 1.8 two non-discriminating frontend tests plus an atomicity assertion that would pass with the transaction deleted.
 
 ---
 
@@ -299,6 +318,8 @@ Deploy by image tag; rollback = redeploy the previous tag/commit via GitHub Acti
 | AI implementation rules | `project-context.md` | Lean coding rules for AI/BMad agents |
 | Claude Code entry point | `CLAUDE.md` | References the two files above |
 | Quick-start | `README.md` | Setup guide for new developers |
+| Design system | `docs/design-system.md` | Authoritative design tokens (frontmatter) + component prose — the source `frontend/src/index.css`'s `@theme` block transcribes (§14.1) |
+| UI mockups | `docs/stitch_exports/<Screen>/` | Per-screen Stitch reference; binding scope defined in §14.1, verified via §14.2 |
 | Tier 1 standards | `docs/technical_architecture_guidelines/coding-standard/` | Company process (git, commits, review, CI/CD, security, testing) |
 | Architecture (detailed) | *(none yet — planned via `bmad-architecture`)* | |
 
@@ -347,6 +368,59 @@ The skeleton's "required files absent" row is **resolved** now that the stack is
 
 ---
 
+## 14. UI Fidelity & Visual Verification
+
+> Added 2026-07-23 from the Epic 1 retrospective. Epic 1 built exactly one screen that has a mockup (Login), and it still took three passes — both corrections triggered by the Project Lead opening a browser, because no story's Definition of Done contained a visual check. Epic 2 has two mockup-backed screens and Epics 3–5 add eight more.
+
+### 14.1 What a mockup binds, and what it does not
+
+The Stitch mockups in `docs/stitch_exports/` and the design system in `docs/design-system.md` **deliberately disagree**, and Story 1.4 resolved that disagreement in favour of the design system:
+
+| | Mockups use | The product uses |
+|---|---|---|
+| Font | Be Vietnam Pro (Google Fonts CDN) | **Inter**, self-hosted via `@fontsource-variable/inter` |
+| Icons | Material Symbols Outlined (CDN, filled) | **lucide-react**, 20×20 stroke — the design system's icon *spec* |
+| Primary blue | `#3B82F6` in prose | **`#0058be`** — `design-system.md`'s frontmatter is authoritative over its own prose |
+| Radius | varies | **10px** default (`design-system.md` §Shapes overrides the frontmatter's `0.5rem`) |
+
+**A compliant screen therefore can never look identical to its mockup. That is intended, not a defect.** What follows is the rule that was previously buried in Story 1.4's Dev Notes and got renegotiated from scratch in Story 1.5.
+
+**Binding — a reviewer may reject the screen for a mismatch:**
+
+- **Layout and composition** — which regions exist, their arrangement, their order, what appears above the fold.
+- **Information hierarchy** — what reads as primary vs. secondary, heading levels, what is emphasized.
+- **Spacing rhythm** — relative density and grouping, expressed through the 4/8px token scale. Match the *rhythm*, not the mockup's literal pixel values.
+- **Vietnamese copy** — headings, labels, button text, empty and error states, verbatim, *unless* the string names an out-of-scope feature (see below).
+- **Component states** the mockup shows — default, hover, active, disabled, loading, empty, error.
+- **Responsive behaviour** at the mockup's own breakpoints.
+
+**Not binding — the token system wins, always:**
+
+- Font family, icon set, literal hex values, radii, shadows, and any external CDN asset. Map each mockup glyph to its nearest lucide icon *by meaning*; map each colour to the `@theme` token with the same **semantic role** (`frontend/src/index.css`).
+- **Never** introduce an external font, icon or image host. Self-host it or rebuild it from tokens.
+
+**A mockup is a visual reference, not a requirements source.** `SRS.md` and `epics.md` define scope. Where a mockup shows an affordance with no FR behind it, drop it and say so in the story — as Story 1.5 did for the Login mockup's "remember me", Google sign-in and sign-up links.
+
+**Screens with no mockup** (e.g. forgot-password and reset-password) derive their composition from the nearest sibling mockup and are built purely from tokens. Record which mockup was used as the parent in the story's Dev Notes.
+
+### 14.2 The visual verification step
+
+Every front-end story's Verify task runs the fidelity harness and records the result:
+
+```bash
+cd frontend && npm run screenshots
+```
+
+This boots the dev server, captures **every routable screen at 1400×900 (desktop) and 390×844 (mobile)**, and writes them to `frontend/visual/__screenshots__/{desktop,mobile}/` (git-ignored). It needs no backend: authenticated routes are reached by seeding the same `onthi12.auth` localStorage key the app reads with an unsigned token carrying the role — the same helper `sidebar.test.tsx` uses. The server remains the real authority (Story 1.6's `RolesGuard`); this only makes the shell render.
+
+The route list is derived from `NAV_BY_ROLE` in `frontend/src/lib/nav-config.ts`, including each destination's `mockup` field, so it cannot drift from the real navigation. The mockup pairing is printed as a test annotation.
+
+**This produces evidence, not assertions.** It deliberately does not diff pixels — §14.1 makes font, icons and colour intentionally different from the mockups, so a pixel diff would fail on every screen by design. Open the captured PNG next to `docs/stitch_exports/<name>/` and judge it against the binding list above.
+
+Two things this catches that unit tests structurally cannot, both of which actually happened in Epic 1: a design token silently shadowing a Tailwind utility (`--spacing-md` shadowing `max-w-md`, which collapsed the login form to a near-zero-width column and was found only by a human screenshot), and a responsive breakpoint that renders but renders wrongly.
+
+---
+
 ## Changelog
 
 | Date | What Changed | Who |
@@ -355,3 +429,6 @@ The skeleton's "required files absent" row is **resolved** now that the stack is
 | 2026-07-15 | Added BMad-format PRD distilled from SRS (`_bmad-output/planning-artifacts/prds/prd-Web_OnThi12-2026-07-15/`); §11 index and §12 BMad-Artifacts PRD row now point to it | Admin |
 | 2026-07-16 | §6 — extended the error envelope with an optional `errorCode` (mirrors AD-16); rule: centralized `SCREAMING_SNAKE_CASE` constants, only for multi-cause business errors, FE branches on code not message | Admin |
 | 2026-07-17 | §2 — PostgreSQL 16 → 18, matching Story 1.1's AC 3 and the `postgres:18` image the scaffold actually runs (`TechStack.md` §3 updated to match) | Admin (code review of story-1.1) |
+| 2026-07-23 | Frontend data-access rule scoped to server state: TanStack Query required for every GET (`useQuery`) and every cache-invalidating write (`useMutation`), with a narrow exception for pre-auth forms that have nothing cached to read or invalidate. Amends the rule rather than rewriting the three working auth pages; closes the Story 1.8 deferred item. Rule text lives in `project-context.md` and `ARCHITECTURE-SPINE.md` (Invariants) | Admin |
+| 2026-07-23 | §7 — added the **integration test tier** (`*.int-spec.ts`, `npm run test:integration`) backed by a throwaway Testcontainers `postgres:18`, for properties only a real database can exhibit (transactions, concurrency, constraints). Documents the three-tier split, the mandatory control test, and the Prisma-7/Jest `--experimental-vm-modules` requirement. Adds the "a test only counts once observed to fail" rule. Epic 1 retrospective action items **C5** and **P3** | Admin (Epic 1 retrospective) |
+| 2026-07-23 | **New §14 — UI Fidelity & Visual Verification.** §14.1 makes the mockup↔token reconciliation explicit (what a mockup binds vs. what the token system overrides), lifting it out of Story 1.4's Dev Notes where it had to be renegotiated each story. §14.2 adds `npm run screenshots`, a Playwright pass capturing every route at 1400×900 and 390×844, now a required Verify task on front-end stories. Epic 1 retrospective action items **C3** and **C4** | Admin (Epic 1 retrospective) |

@@ -45,8 +45,9 @@ npm run dev          # nest start
 npm run start:dev    # nest start --watch
 npm run start:prod   # node dist/src/main  (after npm run build)
 npm run lint         # eslint --fix
-npm test             # unit tests
-npm run test:e2e     # e2e tests
+npm test             # unit tests — mocked Prisma
+npm run test:e2e     # HTTP wiring — guards, envelope, filter; in-memory Prisma fake
+npm run test:integration  # *.int-spec.ts against a throwaway postgres:18 (needs Docker)
 ```
 
 ## Health check

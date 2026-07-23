@@ -11,6 +11,9 @@ export default defineConfig({
     },
   },
   test: {
+    // Scoped to src/ so Vitest never picks up visual/*.spec.ts, which is the
+    // Playwright screenshot harness and runs under a different runner.
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
