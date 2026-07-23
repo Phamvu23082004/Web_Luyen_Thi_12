@@ -29,7 +29,7 @@ Exam-prep web app for grade-12 students and teachers. Teachers create exams **on
 - NestJS modules follow `*.module.ts` / `*.controller.ts` / `*.service.ts` + DTOs with `class-validator` pipes. Mirror `modules/auth/` as the reference.
 - Validate all input at the controller boundary (DTO + ValidationPipe). Never trust client-provided role, score, or `is_correct`.
 - Errors: throw specific NestJS exceptions (`NotFoundException`, `ConflictException`, `UnprocessableEntityException`…) — never a bare `Error`, never hand-format error JSON. A single global exception filter builds every response. Use `BusinessException` + a centralized `errorCode` (`common/exceptions/error-codes.ts`) **only** when one statusCode has several business causes the frontend must branch on (e.g. AD-09 assign gate); plain built-in exceptions otherwise (see PROJECT-STANDARDS §6, AD-16).
-- Frontend data access goes through TanStack Query hooks + a single API client in `lib/`. No ad-hoc `fetch` scattered in components.
+- Frontend data access goes through a single API client in `lib/` — no ad-hoc `fetch` scattered in components. Server state goes through TanStack Query: **every GET uses `useQuery`; every write that invalidates cached data uses `useMutation`**. Sole exception: pre-auth forms that have no cached state to read or invalidate (login, forgot-password, reset-password) may call `apiFetch` with local `useState`. No new exceptions from Epic 2 onward.
 - Use the semantic color system (SRS §5.3): green = good/high, yellow = mild warning (EXAM-07 low-confidence), **red = "missing answer" (EXAM-09)**. Keep these distinct.
 - Match existing style; make surgical changes; don't add speculative abstractions or config.
 

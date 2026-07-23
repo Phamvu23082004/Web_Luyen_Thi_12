@@ -179,7 +179,7 @@ graph TD
 | Auth | JWT verified per request; role from token; guards on every protected route (AD-10, AD-17). |
 | Validation | DTO + `ValidationPipe` at every controller boundary; never trust client `role`/`score`/`is_correct` (AD-10). |
 | Secrets / config | 12-factor env; `GEMINI_API_KEY`/`JWT_SECRET`/DB creds backend-only, never in the frontend bundle, never committed; `.env.example` committed. |
-| Frontend data access | One API client + TanStack Query hooks in `lib/`; no ad-hoc `fetch` in components. |
+| Frontend data access | One API client in `lib/`; no ad-hoc `fetch` in components. Server state via TanStack Query hooks — `useQuery` for every GET, `useMutation` for every write that invalidates cached data. Narrow exception: pre-auth forms with no cached state to read or invalidate (login, forgot/reset-password) may use `apiFetch` + local `useState`; no new exceptions from Epic 2 onward. |
 | Semantic colors | green = good/high · yellow = low-confidence (FR-6) · **red = missing answer (FR-7)** — kept distinct (SRS §5.3). |
 
 ## Stack
