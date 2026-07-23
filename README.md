@@ -10,7 +10,7 @@ Built on the Xiontech **X-Tek** skeleton (Tier-1 company process + AI-assisted d
 |-------|-----------|
 | Frontend | React + TypeScript + Vite, TailwindCSS + shadcn/ui, Recharts, TanStack Query |
 | Backend | Node.js + TypeScript + NestJS (modular monolith) |
-| Database | PostgreSQL 16 + Prisma |
+| Database | PostgreSQL 18 + Prisma |
 | Cache | Redis |
 | Message queue | RabbitMQ |
 | AI parsing | Gemini API (`@google/generative-ai`) |
@@ -31,12 +31,20 @@ See [`TechStack.md`](TechStack.md) for the full rationale.
 
 ## Getting started
 
-> The application code (frontend/backend) is not scaffolded yet — the project is in the planning phase. The steps below describe the intended local setup once the stack is scaffolded.
+1. **Prerequisites**: Docker + Docker Compose, **Node 24.x**, a Gemini API key.
 
-1. **Prerequisites**: Docker + Docker Compose, Node.js LTS, a Gemini API key.
+   Node 24 is not a suggestion — Prisma 7's CLI, Vite 8 and the frontend test runner all fail on older versions. The repo pins it in three places, so you get told rather than guessing:
+
+   ```bash
+   fnm use          # or: nvm use   — both read .nvmrc
+   ```
+
+   `engines` in `backend/package.json` and `frontend/package.json` plus `engine-strict=true` in each workspace's `.npmrc` make `npm ci` **fail** on the wrong version instead of printing an `EBADENGINE` warning and installing anyway.
+
 2. **Configure env**: copy `.env.example` → `.env` and set `DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL`, `GEMINI_API_KEY`, `JWT_SECRET` (see [`docs/PROJECT-STANDARDS.md` §8](docs/PROJECT-STANDARDS.md)).
-3. **Run**: `docker compose up` — brings up PostgreSQL, Redis, RabbitMQ, the NestJS backend, and Nginx.
-4. **Migrate**: `npx prisma migrate dev` to apply the schema.
+3. **Run infra + backend**: `docker compose up` — brings up PostgreSQL, Redis, RabbitMQ, and the NestJS api + worker. (No Nginx locally; that's Epic 6.)
+4. **Migrate + seed**: `cd backend && npx prisma migrate dev && npx prisma db seed`.
+5. **Run the frontend natively** (for Vite HMR): `cd frontend && npm ci && npm run dev` → http://localhost:5173.
 
 ## Roadmap (MVP, ~5 weeks)
 
@@ -51,4 +59,6 @@ Full roadmap and post-MVP optimization plan: [`SRS.md`](SRS.md) §8–§9.
 
 ## Development workflow
 
-This project is driven with **BMad**. Invoke `bmad-help` to see where you are and what to run next. Requirements (SRS) and tech stack are done; the next planning steps are `bmad-architecture` (architecture spine) then `bmad-create-epics-and-stories`.
+This project is driven with **BMad**. Invoke `bmad-help` to see where you are and what to run next. Planning is complete (SRS, tech stack, architecture spine, epics and stories). Epic 1 (Foundation & Authentication) is delivered; Epic 2 (Exam Creation via PDF + AI Parsing) is next.
+
+Current status lives in [`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml); open commitments from the last retrospective are in its `action_items` section.
