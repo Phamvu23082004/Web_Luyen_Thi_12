@@ -29,12 +29,12 @@ _26 FRs from PRD §4 (SRS codes and priority noted; Cao=High / TB=Medium / Thấ
 
 **Exam creation via PDF upload + AI parsing (Teacher)**
 - **FR-4** *(EXAM-01, Cao)*: Create an Exam by uploading exactly one PDF (incl. scanned) + title/subject/duration; PDF retained as Source File; new Exam starts Draft; no exam without a file.
-- **FR-5** *(EXAM-06, Cao)*: Async multimodal extraction — upload enqueues a job; Gemini returns structured questions (content, 4 options, answer-if-present, figure flag, AI confidence); key backend-only.
+- **FR-5** *(EXAM-06, Cao)*: Async multimodal extraction — upload enqueues a job; Gemini returns structured questions (**question type**, content, the type's answer payload, answer-if-present, figure flag, AI confidence); key backend-only. *(Question types added by SRS v1.2 §3.6 / Story 2.2b.)*
 - **FR-6** *(EXAM-07, Cao)*: Flag low-confidence/figure questions in the review screen (yellow, distinct from red); Assign blocked while any flag is unresolved/unacknowledged.
-- **FR-7** *(EXAM-09, Cao)*: When no answer key, question is `needs_confirmation` (red) and Teacher must click A/B/C/D before Assign; optional answer-key file matches by question number; AI never auto-fills.
+- **FR-7** *(EXAM-09, Cao)*: When no answer key, question is `needs_confirmation` (red) and the Teacher must set the answer before Assign — **the control follows the question type** (A/B/C/D · True/False per statement · a numeric value); optional answer-key file matches by question number; AI never auto-fills.
 - **FR-8** *(EXAM-08, TB)*: Auto-detect + crop figures from Bounding Box (with padding); Teacher confirms/re-crops; on parse failure preserve Source File, clear error, manual retry (bounded retry + circuit breaker).
 - **FR-9** *(EXAM-05, TB)*: Edit/delete extracted questions while Draft only; an Exam with ≥1 Submission cannot be deleted (only Closed).
-- **FR-10** *(EXAM-02, Cao)*: Assign Exam to ≥1 Class with a due date, flipping Draft→Open — rejected if any question is `needs_confirmation` or has an unresolved flag; due-date comparisons UTC+7-safe.
+- **FR-10** *(EXAM-02, Cao)*: Assign Exam to ≥1 Class with a due date, flipping Draft→Open — rejected if any question is `needs_confirmation`, has an unresolved flag, **or the exam does not match its subject's standard form** (SRS v1.2 QTYPE-07); due-date comparisons UTC+7-safe.
 - **FR-11** *(EXAM-03, Cao)*: List created Exams, filter by Status, show per-Exam submission rate.
 - **FR-12** *(EXAM-04, TB)*: Close an Exam at/before due date; after Close no new Submissions; content not visible to Students once not Open.
 
@@ -43,7 +43,7 @@ _26 FRs from PRD §4 (SRS codes and priority noted; Cao=High / TB=Medium / Thấ
 - **FR-14** *(TAKE-02, Cao)*: Take a timed exam one question at a time under a countdown; auto-submit at time zero; distraction-free UI.
 - **FR-15** *(TAKE-03, TB)*: Question navigator distinguishing answered/unanswered; jump freely without losing answers.
 - **FR-16** *(TAKE-04, Cao — highest-risk)*: Submit + auto-grade in one transaction; exactly one Submission per Student per Exam (idempotent); `is_correct`/score server-side; holds under ~40 concurrent submits.
-- **FR-17** *(TAKE-05, Cao)*: After submit, show score, correct/incorrect counts, and for each wrong question the chosen vs correct Option.
+- **FR-17** *(TAKE-05, Cao)*: After submit, show score, correct/incorrect counts, and for each wrong question the chosen vs correct answer — **broken down per statement for `true_false_group`**, with the partial credit earned.
 
 **Student dashboard**
 - **FR-18** *(DASH-01, Cao)*: Personal dashboard — 4 cards (avg score, exams done, study streak, vs-class), score-over-time chart, class comparison.
@@ -82,7 +82,8 @@ _Technical requirements from the Architecture Spine (AD-01→22) that shape stor
 
 - **AR-1 — Project scaffold** *(Structural Seed)*: monorepo — `backend/` NestJS modular monolith (modules `auth, exam, ai-parsing, submission, dashboard, class` + `common/` + `prisma/`, `main.ts` HTTP + `worker.ts` WORKER entrypoint), `frontend/` React/Vite (`features, components/ui, lib, routes`), `docker-compose.yml` (nginx · api · worker · postgres · redis · rabbitmq), committed `.env.example`. **This drives Epic 1, Story 1.**
 - **AR-2 — Pinned stack** *(Stack)*: Node 24.x, TS 5.9.x, NestJS 11.x, Prisma 7.x, PostgreSQL 18.x, Redis 8.x, RabbitMQ 4.x, React 19.x, Vite 8.x, Tailwind+shadcn/ui 4.x, TanStack Query 5.x, Recharts, `@google/genai` (Gemini Flash/Flash-Lite).
-- **AR-3 — Data model** *(AD-05, AD-20, entities)*: Prisma schema for `users, classes, class_students, exams, exam_classes, questions, submissions, answer_details, exam_attempts` (+ `class_exam_stats` post-MVP). Invariant columns: `exams.status`, `parse_status`/`parse_error`/`parse_generation`, `source_file_url`; `exam_classes.due_date`; `questions.correct_answer` (nullable), `answer_status`, `reviewed_at` (nullable), `options` (JSON), `ai_confidence`, `image_url`; `exam_attempts.deadline_at`, `status`; `submissions.score` (0–10). Unique: `submissions(student_id, exam_id)`, one in-progress `exam_attempts(student_id, exam_id)`. Indexes: `submissions(student_id, exam_id)`, `questions(exam_id)`, `exam_attempts(student_id, exam_id)`. No topic/type tag column.
+- **AR-3 — Data model** *(AD-05, AD-20, entities)*: Prisma schema for `users, classes, class_students, exams, exam_classes, questions, submissions, answer_details, exam_attempts` (+ `class_exam_stats` post-MVP). Invariant columns: `exams.status`, `parse_status`/`parse_error`/`parse_generation`, `source_file_url`; `exam_classes.due_date`; `questions.correct_answer` (nullable), `answer_status`, `reviewed_at` (nullable), `options` (JSON), `ai_confidence`, `image_url`; `exam_attempts.deadline_at`, `status`; `submissions.score` (0–10). Unique: `submissions(student_id, exam_id)`, one in-progress `exam_attempts(student_id, exam_id)`. Indexes: `submissions(student_id, exam_id)`, `questions(exam_id)`, `exam_attempts(student_id, exam_id)`. **No topic tag column** — but see the amendment below.
+  - **Amended 2026-07-24 by Story 2.2b (SRS v1.2 §3.6):** `questions` gains `question_type` (`mcq_single`/`true_false_group`/`short_answer`), `options` and `correct_answer` become polymorphic per that type, `answer_details` gains `points_earned`, and `exams.subject` becomes an **enum** (`toan`/`vat_li`/`hoa_hoc`/`sinh_hoc`/`lich_su`/`dia_li`/`gdktpl`/`tieng_anh`). `question_type` is an *answer-format* discriminator — the "no topic tag" rule above is unchanged and still holds.
 - **AR-4 — API envelope & errors** *(AD-16)*: base `/api`, kebab-case plural; global response interceptor `{ data, meta? }`; single global exception filter `{ statusCode, message, error, errorCode? }`; centralized `common/exceptions/error-codes.ts` (`EXAM_HAS_UNCONFIRMED_ANSWERS`/`EXAM_HAS_UNREVIEWED_FLAGS` 422; `EXAM_NOT_OPEN`/`EXAM_PAST_DUE` 409); `?page=&limit=` pagination; 5xx never leak internals.
 - **AR-5 — Auth infra** *(AD-10, AD-17)*: minimal-claim JWT (`sub`+`role`); global `JwtAuthGuard` with `@Public()`; `RolesGuard` + `@Roles()` reading role from token; access token short-TTL stateless; refresh token hashed in Redis + rotated on `/refresh`; logout revokes refresh only; password hashing (bcrypt/argon2); DTO + `ValidationPipe` at every controller; never trust client `role`/`score`/`is_correct`.
 - **AR-6 — Module boundaries** *(AD-05, AD-06, AD-07)*: single-writer table ownership; cross-module access via owner service interface only (no foreign-table writes); `dashboard` read-only direct-query exception; `exam` is the only writer of `questions`; re-parse replaces all questions atomically, Draft-only.
@@ -412,6 +413,8 @@ So that the review screen fills itself instead of me typing. *(FR-5)*
 **When** it consumes a parse job
 **Then** it calls `exam.markParsing()`, sends each page image to Gemini (Flash/Flash-Lite) with the API key read from **backend env only** (never exposed to the frontend), and receives structured questions (content, four options, correct-answer-if-present, figure-present flag, `ai_confidence`). *(AR-7, AR-18, NFR-09/10)*
 
+> **Superseded in part by Story 2.2b (2026-07-24).** "Four options" above was written when SRS v1.1 modelled a single question type. Story 2.2 shipped exactly as specified here and its ACs all hold; Story 2.2b then generalises the payload to the three THPT answer formats (SRS v1.2 §3.6). Read the two together.
+
 **Given** a successful parse
 **When** results are written
 **Then** the worker calls `exam.persistParsedQuestions(examId, result)` — `exam` is the **only** writer of `questions` — each question's `answer_status` is derived (`ai_extracted` if an answer was read, else `needs_confirmation`), and `parse_status` becomes `parsed`.
@@ -423,6 +426,58 @@ So that the review screen fills itself instead of me typing. *(FR-5)*
 **Given** an exam not in Draft
 **When** a parse result arrives
 **Then** the question write is rejected (no clobbering of assigned exams).
+
+### Story 2.2b: Extend the question model to the three THPT answer formats
+
+<!-- Added 2026-07-24 after Story 2.2's smoke run on the official 2026 THPT Toán
+     paper (mã đề 0101) extracted only 12 of its 22 questions. SRS raised to v1.2
+     (§3.6, QTYPE-01..06) and the PRD glossary/FR-5/FR-7/FR-16/FR-17 amended
+     before this story was written. Full evidence: deferred-work.md §"manual smoke
+     run of story-2.2".
+
+     WHY HERE AND NOT LATER. `ParsedQuestion` is the cross-module contract Story
+     2.2's own Dev Notes flag as the expensive one: "get the shape right here
+     rather than reshaping it four stories later." Today exactly ONE story depends
+     on it. After 2.4/2.5/2.7 it is four, and after Story 3.3 the change also
+     reopens the transactional grading core that NFR-04's merge-blocking tests
+     guard. This story must land before 2.3. -->
+
+As a teacher,
+I want every question on a real THPT exam paper extracted, not just the multiple-choice part,
+So that uploading the official paper does not silently drop half of it. *(FR-5, SRS v1.2 §3.6)*
+
+**Acceptance Criteria:**
+
+**Given** the `questions` table
+**When** the migration runs
+**Then** it gains a `question_type` discriminator (`mcq_single` / `true_false_group` / `short_answer`), `correct_answer` becomes a polymorphic JSON column, and `options` carries the type's payload — four options, four statements, or none — per SRS v1.2 §7. Existing rows migrate to `mcq_single` with no data loss. *(AR-3)*
+
+**Given** `exams.subject`, today a free-text string
+**When** the migration runs
+**Then** it becomes an **enum** (`toan` / `vat_li` / `hoa_hoc` / `sinh_hoc` / `lich_su` / `dia_li` / `gdktpl` / `tieng_anh`) and `CreateExamDto` validates against it. Rationale (SRS v1.2 §3.6/§7): QTYPE-03 points depend on the subject — Toán 0,5, Vật lí/Hoá học/Sinh học 0,25 — and a free-text value cannot key a scoring lookup; a teacher typing `"Toán "` with a trailing space would mis-score a whole class. Existing rows hold only `Toan`/`Toán`, all mapping to `toan`. *(Admin decision, 2026-07-24)*
+
+**Given** the AI parsing worker
+**When** it extracts a page
+**Then** each returned question carries its `question_type`, and the prompt plus `responseSchema` express all three shapes. A question matching none of the three is **skipped, never coerced** into a type it does not fit. *(QTYPE-04)*
+
+**Given** the extraction prompt
+**When** it is rewritten for the three types
+**Then** it also carries the **content-normalization rules (SRS v1.2 QTYPE-08)**: Vietnamese preserved verbatim; **every mathematical expression emitted as LaTeX**, inline wrapped in `$…$` and display wrapped in `$$…$$`, with no bare `\frac`/`\sqrt`/`\neq`/`\lim` outside a delimiter; option values carry **content only, never the A/B/C/D label**; `aiConfidence` is transcription confidence, not answer confidence. This closes the inconsistent-notation finding from Story 2.2's smoke run, where one parse produced plain `u_n`, bare `\int f(x) dx` and `$(u_n)$` side by side.
+
+**Given** an extracted question of any of the three types
+**When** `exam` sanitizes it before persisting
+**Then** the type-specific shape is validated (exactly four options / exactly four statements / a parsable numeric value), and **AD-04 holds identically for all three**: an answer the source file did not state degrades to `needs_confirmation`, never to a guess. A structurally invalid question rejects the whole result. *(QTYPE-05, AD-04)*
+
+**Given** the official 2026 THPT Toán paper (mã đề 0101) used as the verification fixture
+**When** it is parsed end to end
+**Then** all **22** questions are extracted — 12 `mcq_single`, 4 `true_false_group`, 6 `short_answer` — in document order, with correct `order_index` and no invented answers.
+
+**Out of scope — named so they are not pulled in:**
+- **The standard-form check (QTYPE-07)** — Story 2.8's assign gate (`EXAM_STRUCTURE_MISMATCH`) and Story 2.4's review-screen warning. This story defines the types the check counts; it performs no checking and blocks nothing. Deliberately **not** enforced at parse time: an AI misread that drops one question must not destroy a valid upload (NFR-11).
+- **Grading and partial credit (QTYPE-06)** — Story 3.3. This story stores the answer shapes; it computes no score. `answer_details.points_earned` is added by 3.3, not here.
+- **Per-type review/confirm widgets** — Stories 2.4 and 2.5. This story writes the data those screens will render.
+- **Per-type answering UI** — Story 3.4.
+- **The scoring scale itself** — SRS v1.2 §3.6 records it but flags it as unverified against the official MOET regulation. Confirming it is a prerequisite of Story 3.3, not of this story.
 
 ### Story 2.3: Gemini reliability — retry, circuit breaker, failure surfacing
 
@@ -454,7 +509,15 @@ So that I can prioritize checking low-confidence and figure questions before ass
 
 **Given** a parsed exam
 **When** the review screen renders
-**Then** all extracted questions appear in one editable list (no blank authoring screen), each showing content, four options, and status.
+**Then** all extracted questions appear in one editable list (no blank authoring screen), each showing content, its **question-type-appropriate payload** (four options · four Đúng/Sai statements · no options), and status.
+
+**Given** question content containing LaTeX (SRS v1.2 QTYPE-08 — inline `$…$`, display `$$…$$`)
+**When** it renders
+**Then** it renders as **typeset mathematics, not raw source**. This is the first screen to display question content, so it owns the decision to add a math renderer (e.g. KaTeX) to the frontend stack — `TechStack.md` has none today. Stories 3.4 and 3.5 reuse whatever is chosen here.
+
+**Given** an exam whose per-type question counts do not match its subject's standard form (SRS v1.2 QTYPE-07 — e.g. a `toan` exam with 11 `mcq_single` instead of 12)
+**When** the review screen renders
+**Then** it states the mismatch explicitly and per part (*"Đề Toán cần 12 câu Phần I, hiện có 11"*), so the teacher can add or fix the questions the AI misread. The screen **warns**; Story 2.8's assign gate is what actually blocks. Parsing is never failed for a mismatch (NFR-11).
 
 **Given** a question with `ai_confidence < AI_CONFIDENCE_LOW_THRESHOLD` (a single backend config value) or containing a figure
 **When** it renders
@@ -469,6 +532,12 @@ So that I can prioritize checking low-confidence and figure questions before ass
 As a teacher,
 I want to set the correct answer for any question the AI couldn't read,
 So that no exam is assigned with an unconfirmed answer. *(FR-7)*
+
+<!-- SRS v1.2 §3.6 / QTYPE-05: the confirmation control follows the question type —
+     A/B/C/D for mcq_single, True/False on each of the four statements for
+     true_false_group, a numeric value for short_answer. The gate itself stays
+     type-blind: any needs_confirmation question of any type blocks Assign. -->
+
 
 **Acceptance Criteria:**
 
@@ -530,11 +599,15 @@ So that students can take it — but never a half-confirmed one. *(FR-10)*
 
 **Given** `exam.assign()` is the single chokepoint for Draft→Open
 **When** the teacher assigns to one or more classes with a due date
-**Then** it takes a row lock on the exam, **re-validates the gate in the same transaction**, and flips to Open only if **every** question has `answer_status ≠ needs_confirmation` **and** (`reviewed_at` set or never flagged). *(AR-11)*
+**Then** it takes a row lock on the exam, **re-validates the gate in the same transaction**, and flips to Open only if **every** question has `answer_status ≠ needs_confirmation`, **and** (`reviewed_at` set or never flagged), **and** the exam matches its subject's standard form. *(AR-11)*
 
-**Given** any question is `needs_confirmation` or has an unresolved flag
+**Given** any question is `needs_confirmation`, or has an unresolved flag, or the exam does not match its subject's standard form
 **When** assign is attempted
-**Then** it is rejected with 422 and `errorCode` = `EXAM_HAS_UNCONFIRMED_ANSWERS` or `EXAM_HAS_UNREVIEWED_FLAGS` so the frontend can branch. *(AR-4)*
+**Then** it is rejected with 422 and `errorCode` = `EXAM_HAS_UNCONFIRMED_ANSWERS`, `EXAM_HAS_UNREVIEWED_FLAGS`, or `EXAM_STRUCTURE_MISMATCH` so the frontend can branch. *(AR-4)*
+
+**Given** the standard form for the exam's subject (SRS v1.2 §3.6 / QTYPE-07 — e.g. `toan` = 12 `mcq_single` + 4 `true_false_group` + 6 `short_answer`)
+**When** the gate re-validates
+**Then** the exam's per-type question counts must match it exactly. **This is checked at assign time only, never at parse time** — an AI misread that drops one question must not destroy a valid upload (NFR-11); the teacher fixes it in the review screen first.
 
 **Given** a due date
 **When** it is stored and later compared
@@ -634,11 +707,21 @@ So that a whole class submitting at once never loses or duplicates a result. *(F
 
 **Given** the Prisma schema
 **When** the migration runs
-**Then** `answer_details` (id, submission_id, question_id, student_answer, is_correct) exists, owned solely by `submission`.
+**Then** `answer_details` (id, submission_id, question_id, student_answer, is_correct, **points_earned**) exists, owned solely by `submission`. `student_answer` is polymorphic per `question_type` and `points_earned` carries partial credit — both introduced by Story 2.2b / SRS v1.2 §7.
 
 **Given** a submit (manual or auto) on an attempt where `now ≤ deadline_at`
 **When** it is processed
 **Then** answers are matched against each question's confirmed `correct_answer`, the score (0–10, one decimal) and every `is_correct` are computed **server-side only**, and the `submissions` row + all `answer_details` are written in a **single transaction** — never a partial write. The attempt is accepted regardless of a later Close or `due_date` change. *(AR-12)*
+
+**Given** questions of all three types in one exam
+**When** grading runs
+**Then** it branches on `question_type` (SRS v1.2 §3.6 / QTYPE-06). Per-question maximum: `mcq_single` **0,25 in every subject**; `true_false_group` **max 1,0 in every subject**, awarded on the **non-linear** partial-credit scale 1 ý → 0,1 · 2 ý → 0,25 · 3 ý → 0,5 · 4 ý → 1,0 (**never `correct ÷ 4`** — that would pay 0,5 for two correct instead of 0,25); `short_answer` **0,5 for `toan`, 0,25 for `vat_li`/`hoa_hoc`/`sinh_hoc`** — the only subject-dependent value in the whole table, which is why `subject` became an enum in Story 2.2b. `short_answer` matches by **numeric value**, not string equality (`1,5` = `1.5` = `1.50`).
+
+**Given** any exam that reaches grading
+**When** the score is computed
+**Then** it uses the **absolute scale only — there is no normalization step.** Every assignable exam matches its subject's standard form (Story 2.8's `EXAM_STRUCTURE_MISMATCH` gate), so the maximum is always exactly 10. Do **not** add an `earned ÷ max × 10` conversion "just in case": it is unreachable code that would silently paper over a broken assign gate instead of surfacing it.
+
+> ℹ️ Two questions that were open here are now closed by Admin's 2026-07-24 decision that every uploaded exam must follow its subject's standard form: the partial-practice-exam maximum (no longer possible) and the `short_answer` point value for subjects with no Phần III (that type is not valid in those forms). See SRS v1.2 §3.6 / QTYPE-07.
 
 **Given** a duplicate submit for the same (student, exam)
 **When** it hits the unique constraint

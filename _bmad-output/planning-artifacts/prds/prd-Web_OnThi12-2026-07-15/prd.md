@@ -87,16 +87,20 @@ Because the entire exam-creation flow depends on AI, correctness discipline is t
 - **Class** — a group of Students with one responsible Teacher. A Student belongs to exactly one Class; a Teacher may have many.
 - **Exam** — a set of single-correct-answer multiple-choice **Questions** created from exactly one uploaded **Source File**, then **Assigned** to one or more Classes. Has a **Status**: Draft, Open, or Closed.
 - **Source File** — the original PDF a Teacher uploaded; the single origin of an Exam, retained for re-parsing and reference.
-- **Question** — one multiple-choice item in an Exam: content, four **Options**, an optional **Correct Answer**, an optional figure image, an **AI Confidence**, and an **Answer Status**.
-- **Option** — one of the four answer choices (A/B/C/D) of a Question.
-- **Correct Answer** — the single correct Option of a Question; **nullable** — empty until confirmed.
+- **Question** — one auto-gradable item in an Exam: a **Question Type**, content, a type-dependent answer payload, an optional **Correct Answer**, an optional figure image, an **AI Confidence**, and an **Answer Status**.
+- **Question Type** — the *answer format* of a Question, matching the three parts of the current THPT exam paper (SRS v1.2 §3.6). One of: `mcq_single` (four Options, pick one), `true_false_group` (four Statements, each marked True or False independently), `short_answer` (no options; the Student enters a numeric value). Not a topic tag.
+- **Option** — one of the four answer choices (A/B/C/D) of an `mcq_single` Question.
+- **Statement** — one of the four sub-items a)/b)/c)/d) of a `true_false_group` Question, each independently True or False.
+- **Correct Answer** — a Question's confirmed answer; **nullable** — empty until confirmed. Its shape follows the Question Type: an Option letter, four booleans (one per Statement), or a numeric value.
+- **Partial Credit** — the score a `true_false_group` Question earns when only some of its four Statements are answered correctly, on the official **non-linear** scale (1 → 0,1 · 2 → 0,25 · 3 → 0,5 · 4 → 1,0). Unique to that type; the other two types are all-or-nothing.
+- **Subject** — the exam's subject, an **enum** (`toan`, `vat_li`, `hoa_hoc`, `sinh_hoc`, `lich_su`, `dia_li`, `gdktpl`, `tieng_anh`), not free text. It is an enum because `short_answer` points depend on it (Toán 0,5 vs. 0,25 elsewhere) and a typed string cannot safely key a scoring lookup.
 - **Answer Status** — a Question's answer state: `ai_extracted` (AI read an answer), `needs_confirmation` (no answer found — "missing answer"), or `manually_confirmed` (Teacher set it). Gates **Assignment**.
 - **AI Confidence** — the AI model's self-reported reading confidence for a Question, used to flag low-confidence items for review.
 - **Bounding Box** — AI-returned coordinates of a figure region on a page, used to auto-crop a Question's figure image.
 - **AI Parsing** — the asynchronous step where the system sends Source File pages to Gemini and receives structured questions/answers/figure locations.
 - **Assign** — the Teacher action that attaches an Exam to Classes with a due date and flips Status Draft → Open. Blocked while any Question is `needs_confirmation` or has an unresolved flag.
 - **Submission** — one Student's graded attempt at one Exam. At most one Submission per Student per Exam (idempotent).
-- **Answer Detail** — one answered Question within a Submission: the Student's chosen Option and whether it was correct.
+- **Answer Detail** — one answered Question within a Submission: the Student's answer (shape follows the Question Type), whether it was correct, and the points earned (which may be partial for `true_false_group`).
 - **Dashboard** — a read-only statistics view (cards + charts) for a Student (personal) or a Teacher (class/exam/student).
 - **Class Exam Stats** — a pre-computed statistics record per Class per Exam (average score, completion rate); a post-MVP optimization.
 
@@ -146,10 +150,11 @@ A Teacher can create an Exam by uploading exactly one PDF (including scanned/ima
 **Out of Scope:** manual question authoring; non-PDF formats. `[ASSUMPTION: exactly one primary PDF per exam; a separate optional answer-key file is handled in FR-7.]`
 
 #### FR-5: Asynchronous multimodal question extraction *(SRS EXAM-06, Cao)*
-On upload, the system enqueues an AI Parsing job that sends Source File pages to a multimodal AI (Gemini) and returns structured questions (content, four Options, Correct Answer if present, figure-present flag, AI Confidence) into the review screen.
+On upload, the system enqueues an AI Parsing job that sends Source File pages to a multimodal AI (Gemini) and returns structured questions (**Question Type**, content, the type's answer payload, Correct Answer if present, figure-present flag, AI Confidence) into the review screen.
 **Consequences (testable):**
 - Extraction runs **asynchronously**; the upload request returns without waiting for Gemini, and the Teacher can leave the page.
 - Each extracted Question carries an AI Confidence and an Answer Status derived from whether an answer was found.
+- **Each extracted Question is classified into one of the three Question Types** (SRS v1.2 §3.6 / QTYPE-04). A question matching none of them is skipped rather than coerced into a type it does not fit.
 - The Gemini API key is read from backend environment only and is never sent to or exposed in the frontend.
 **Feature-specific NFRs:** must degrade gracefully on Gemini error/timeout/quota — see FR-8's error path and NFR-11.
 
@@ -160,9 +165,10 @@ Questions that are low-confidence or contain a figure are visibly flagged in the
 - An Exam cannot be Assigned while any flagged question remains unresolved and the Teacher has not explicitly acknowledged/dismissed the flag.
 
 #### FR-7: Confirm correct answer when the file has no answer key *(SRS EXAM-09, Cao)*
-When AI cannot extract a Question's Correct Answer, the Question is marked "missing answer" (`needs_confirmation`) and the Teacher **must** set the answer by clicking A/B/C/D before the Exam can be Assigned; alternatively the Teacher may upload a separate answer-key file (image or short PDF) for the AI to match by question number.
+When AI cannot extract a Question's Correct Answer, the Question is marked "missing answer" (`needs_confirmation`) and the Teacher **must** set the answer before the Exam can be Assigned; alternatively the Teacher may upload a separate answer-key file (image or short PDF) for the AI to match by question number.
 **Consequences (testable):**
 - A `needs_confirmation` Question renders in **red**, distinct from the yellow low-confidence flag.
+- **The confirmation control follows the Question Type** (SRS v1.2 QTYPE-05): click A/B/C/D for `mcq_single`; mark True/False on each of the four Statements for `true_false_group`; enter a numeric value for `short_answer`. The gate itself is type-blind — any `needs_confirmation` Question of any type blocks Assignment.
 - Setting an answer moves the Question to `manually_confirmed`; the AI never auto-fills a `needs_confirmation` answer.
 - With any `needs_confirmation` Question present, the Assign action is disabled/blocked.
 - Uploading an answer-key file matches answers by question order/number and moves matched Questions to a confirmed state, still subject to Teacher review.
@@ -230,6 +236,9 @@ A Student can see an overview of answered/unanswered Questions and move freely b
 On submit (manual or auto), the system matches answers, computes the score immediately, and writes the Submission and its Answer Details in a single transaction — exactly one Submission per Student per Exam.
 **Consequences (testable):**
 - Grading uses each Question's confirmed Correct Answer; scoring completes without teacher involvement.
+- **Grading branches on Question Type** (SRS v1.2 §3.6 / QTYPE-06): `mcq_single` is 0,25 in every subject; **`true_false_group` awards Partial Credit** on the non-linear scale, max 1,0 in every subject; `short_answer` is 0,5 for `toan` and 0,25 for `vat_li`/`hoa_hoc`/`sinh_hoc` — the only subject-dependent value.
+- **`short_answer` is matched by numeric value, not string equality** — `1,5`, `1.5` and `1.50` are the same answer.
+- **The raw score is normalized to 0–10 by the exam's actual maximum**, so a partial practice exam scores fairly; for a full official paper the maximum is already 10 and the official score is preserved exactly.
 - The write is atomic: never a partially written Submission.
 - Submitting twice yields exactly one Submission (idempotent) — enforced by a unique constraint on (student, exam); a second submit is rejected/no-ops rather than duplicating.
 - Correctness/`is_correct` is computed server-side, never trusted from the client.
@@ -239,7 +248,8 @@ On submit (manual or auto), the system matches answers, computes the score immed
 After submitting, a Student sees the score, the count of correct/incorrect, and for each wrong Question both the chosen Option and the Correct Answer.
 **Consequences (testable):**
 - The results view shows total score and correct/incorrect counts.
-- Every incorrect Question displays chosen vs. correct Option.
+- Every incorrect Question displays chosen vs. correct answer, in the shape of its Question Type.
+- **A `true_false_group` Question is broken down per Statement** (which of a/b/c/d were right) plus the Partial Credit earned — "wrong" at the question level does not tell the Student which Statement they missed.
 
 ### 4.4 Student Dashboard
 

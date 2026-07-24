@@ -40,6 +40,10 @@ Exam-prep web app for grade-12 students and teachers. Teachers create exams **on
 - **An exam cannot be assigned** while any question is `needs_confirmation` or flagged-unresolved (EXAM-02, EXAM-07).
 - **Submission is transactional and idempotent** — one submission per student per exam, no partial/duplicate writes (NFR-04).
 - **`questions.correct_answer` is nullable**; gate on `answer_status` (`ai_extracted` / `needs_confirmation` / `manually_confirmed`), not on whether the field is set.
+- **Three question types, one table** (SRS v1.2 §3.6): `question_type` = `mcq_single` / `true_false_group` / `short_answer`, matching the three parts of the current THPT paper. `options`, `correct_answer` and `student_answer` are polymorphic JSON keyed off it. **AD-04 applies identically to all three** — the AI never infers an answer for any type. `question_type` is *answer format*, never a topic tag.
+- **`exams.subject` is an enum**, not free text (`toan` / `vat_li` / `hoa_hoc` / `sinh_hoc` / `lich_su` / `dia_li` / `gdktpl` / `tieng_anh`) — `short_answer` points depend on it and a typed string cannot key a scoring lookup.
+- **Every exam must match its subject's standard form** (SRS v1.2 QTYPE-07: `toan` 12/4/6 · sciences 18/4/6 · social 24/4/– · `tieng_anh` 40/–/–). Enforced at **assign** time (`EXAM_STRUCTURE_MISMATCH`), warned at review time, and **never at parse time** — an AI misread must not destroy a valid upload (NFR-11).
+- **Scoring (SRS v1.2 §3.6):** `mcq_single` 0,25 everywhere · `true_false_group` max 1,0 everywhere on the **non-linear** scale 1→0,1 · 2→0,25 · 3→0,5 · 4→1,0 (**never `correct ÷ 4`**) · `short_answer` 0,5 for `toan`, 0,25 for `vat_li`/`hoa_hoc`/`sinh_hoc`. **Absolute scale, no normalization** — the form gate guarantees the maximum is always 10.
 - Exam content is only visible to students while the exam status is open (NFR-03).
 
 ## Anti-patterns (Do NOT)

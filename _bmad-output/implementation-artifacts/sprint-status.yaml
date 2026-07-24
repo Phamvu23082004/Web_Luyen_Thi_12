@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-16
-last_updated: 2026-07-24  # story 2.1b done (code review passed, 4 patches applied); P1+P5 done; P2/P4/D1 still open
+last_updated: 2026-07-24  # story 2.2 review; 2.1b done; P1+P5 done; P2/P4/D1 still open
 project: Web_OnThi12
 project_key: NOKEY
 tracking_system: file-system
@@ -67,7 +67,19 @@ development_status:
   # 2.1b = publish parse job + per-teacher throttle (AC 4-5). 2.1b depends on 2.1a.
   2-1a-exam-schema-and-create-draft-exam-by-pdf-upload: done
   2-1b-enqueue-parse-job-with-per-teacher-rate-limit: done
-  2-2-asynchronous-ai-parsing-worker-gemini-extraction: backlog
+  # Sized at create-story (P5): 3 new axes (AMQP consumer, PDF->page render, Gemini
+  # SDK). Split into 2.2a/2.2b was proposed and DECLINED by Admin 2026-07-24 — kept
+  # as one story, mitigated by task sequencing (Tasks 1-4 = correctness core behind
+  # ports, land first; Tasks 5-6 = external adapters).
+  2-2-asynchronous-ai-parsing-worker-gemini-extraction: review
+  # Added 2026-07-24 by Admin. Story 2.2's smoke run on the official 2026 THPT Toán
+  # paper extracted only 12 of 22 questions: the real exam has three parts and SRS
+  # v1.1 modelled one. SRS raised to v1.2 (§3.6, QTYPE-01..06) and the PRD amended
+  # before this story was written. Placed BEFORE 2.3 on purpose — ParsedQuestion is
+  # the cross-module contract 2.2's Dev Notes flag as expensive to reshape later:
+  # one story depends on it today, four after 2.4/2.5/2.7, and after 3.3 the change
+  # would reopen the transactional grading core NFR-04's tests guard.
+  2-2b-extend-question-model-to-three-thpt-answer-formats: backlog
   2-3-gemini-reliability-retry-circuit-breaker-failure-surfacing: backlog
   2-4-review-screen-with-attention-flags: backlog
   2-5-confirm-missing-answers: backlog
@@ -76,6 +88,9 @@ development_status:
   2-8-assign-exam-to-classes-with-the-correctness-gate: backlog
   2-9-list-created-exams-with-submission-rate: backlog
   2-10-close-an-exam: backlog
+  # The 3-part scope question raised by Story 2.2's smoke run was RESOLVED before
+  # the retro, not at it: Admin chose 2026-07-24 to adopt all three THPT question
+  # types immediately. SRS → v1.2, PRD amended, Story 2.2b added above.
   epic-2-retrospective: optional
 
   # Epic 3: Taking Exams & Auto-Grading

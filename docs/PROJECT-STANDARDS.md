@@ -3,7 +3,7 @@
 > **This is the single source of truth** for all project decisions, context, and conventions.
 > Other files (`project-context.md`, `CLAUDE.md`, `README.md`) reference this document — they do not duplicate it.
 >
-> Filled from `SRS.md` (v1.1, July 2026) and `TechStack.md`. Update as the project evolves.
+> Filled from `SRS.md` (v1.2, July 2026) and `TechStack.md`. Update as the project evolves.
 
 ---
 
@@ -241,6 +241,7 @@ Three backend tiers, each with a distinct job. Put a test in the cheapest tier t
 | `REDIS_URL` | Redis cache connection | `redis://redis:6379` | ✅ |
 | `RABBITMQ_URL` | RabbitMQ connection | `amqp://guest:guest@rabbitmq:5672` | ✅ |
 | `GEMINI_API_KEY` | Gemini API key — **backend only (AI Parsing)**, never exposed to frontend (NFR-09) | `AIza...` | ✅ |
+| `GEMINI_MODEL` | Gemini model used for exam parsing (NFR-09). A var rather than a constant because Google retires model IDs on its own schedule. Falls back to `gemini-3.5-flash-lite` when absent. | `gemini-3.5-flash-lite` | ✅ |
 | `JWT_SECRET` | JWT signing secret | `<random-secret>` | ✅ |
 | `JWT_EXPIRES_IN` | Token lifetime | `1d` | ✅ |
 | `NODE_ENV` | Environment | `development` / `production` | ✅ |
@@ -282,10 +283,12 @@ Three backend tiers, each with a distinct job. Put a test in the cheapest tier t
 Core tables (SRS §7): `users`, `classes`, `class_students`, `exams`, `exam_classes`, `questions`, `submissions`, `answer_details`, `class_exam_stats`.
 
 - `exams.source_file_url`: stores the original PDF — the **single source** of an exam, needed to retry AI parsing.
-- `questions.correct_answer`: **nullable** — empty until the answer is confirmed.
-- `questions.answer_status`: `ai_extracted` / `needs_confirmation` / `manually_confirmed` — used to block assignment (EXAM-09).
-- `questions.options`: JSON column (4 choices).
-- No question-type/topic-tag column in v1.1.
+- `questions.correct_answer`: **nullable** — empty until the answer is confirmed. From SRS v1.2 it is a **polymorphic JSON** column whose shape follows `question_type` (an option letter / four booleans / a numeric value).
+- `questions.answer_status`: `ai_extracted` / `needs_confirmation` / `manually_confirmed` — used to block assignment (EXAM-09). Type-blind: any `needs_confirmation` question of any type blocks assignment.
+- `questions.question_type`: `mcq_single` / `true_false_group` / `short_answer` — the *answer format* discriminator added by SRS v1.2 §3.6 (Story 2.2b), matching the three parts of the current THPT paper.
+- `exams.subject`: **enum**, not free text (`toan` / `vat_li` / `hoa_hoc` / `sinh_hoc` / `lich_su` / `dia_li` / `gdktpl` / `tieng_anh`), because `short_answer` points are looked up by subject (SRS v1.2 §3.6). Adding a subject = one enum value + its Phần III points.
+- `questions.options`: JSON column, polymorphic per `question_type` — four options A-D, four Đúng/Sai statements a-d, or empty.
+- **No topic-tag ("dạng bài") column** — the system does not classify questions by subject matter. `question_type` is answer format, not topic; do not conflate them.
 - Suggested indexes: `submissions(student_id, exam_id)`, `questions(exam_id)`.
 - `class_exam_stats`: pre-computed stats table for dashboards (post-MVP optimization — §9.1).
 
@@ -318,7 +321,7 @@ Deploy by image tag; rollback = redeploy the previous tag/commit via GitHub Acti
 | Document | Location | Purpose |
 |----------|----------|---------|
 | This file | `docs/PROJECT-STANDARDS.md` | Single source of truth |
-| SRS | `SRS.md` | Software Requirements Specification (v1.1) — exhaustive requirements source |
+| SRS | `SRS.md` | Software Requirements Specification (v1.2) — exhaustive requirements source |
 | PRD (BMad-format) | `_bmad-output/planning-artifacts/prds/prd-Web_OnThi12-2026-07-15/prd.md` | Downstream-ready PRD distilled from the SRS (26 FRs, User Journeys, Glossary, Success Metrics); `addendum.md` alongside holds the FR↔SRS map and technical reconciliations |
 | Tech Stack | `TechStack.md` | Technology per layer |
 | AI implementation rules | `project-context.md` | Lean coding rules for AI/BMad agents |
@@ -437,4 +440,5 @@ Two things this catches that unit tests structurally cannot, both of which actua
 | 2026-07-17 | §2 — PostgreSQL 16 → 18, matching Story 1.1's AC 3 and the `postgres:18` image the scaffold actually runs (`TechStack.md` §3 updated to match) | Admin (code review of story-1.1) |
 | 2026-07-23 | Frontend data-access rule scoped to server state: TanStack Query required for every GET (`useQuery`) and every cache-invalidating write (`useMutation`), with a narrow exception for pre-auth forms that have nothing cached to read or invalidate. Amends the rule rather than rewriting the three working auth pages; closes the Story 1.8 deferred item. Rule text lives in `project-context.md` and `ARCHITECTURE-SPINE.md` (Invariants) | Admin |
 | 2026-07-23 | §7 — added the **integration test tier** (`*.int-spec.ts`, `npm run test:integration`) backed by a throwaway Testcontainers `postgres:18`, for properties only a real database can exhibit (transactions, concurrency, constraints). Documents the three-tier split, the mandatory control test, and the Prisma-7/Jest `--experimental-vm-modules` requirement. Adds the "a test only counts once observed to fail" rule. Epic 1 retrospective action items **C5** and **P3** | Admin (Epic 1 retrospective) |
+| 2026-07-24 | §9 — `questions` gains a `question_type` discriminator and polymorphic `options`/`correct_answer`, following **SRS raised to v1.2** (new §3.6, QTYPE-01..06). Trigger: Story 2.2's smoke run on the official 2026 THPT Toán paper extracted only 12 of its 22 questions — the real exam has three parts (multiple-choice, Đúng/Sai, short numeric answer) and v1.1 modelled one. All three are auto-gradable, so the SRS's "tự luận needs NLP" exclusion never applied to them. PRD and `epics.md` amended; Story 2.2b added between 2.2 and 2.3 | Admin |
 | 2026-07-23 | **New §14 — UI Fidelity & Visual Verification.** §14.1 makes the mockup↔token reconciliation explicit (what a mockup binds vs. what the token system overrides), lifting it out of Story 1.4's Dev Notes where it had to be renegotiated each story. §14.2 adds `npm run screenshots`, a Playwright pass capturing every route at 1400×900 and 390×844, now a required Verify task on front-end stories. Epic 1 retrospective action items **C3** and **C4** | Admin (Epic 1 retrospective) |
