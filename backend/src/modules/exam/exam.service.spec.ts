@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import type { FileStorage } from '../../common/storage/file-storage';
 import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
+import type { ParseJobPublisher } from './parse-job.publisher';
 
 const DTO: CreateExamDto = {
   title: 'Giữa kỳ Toán 12',
@@ -70,15 +71,27 @@ function buildPrismaFake() {
   return prisma;
 }
 
+function buildPublisherFake() {
+  return {
+    publish: jest.fn<Promise<void>, [unknown]>().mockResolvedValue(undefined),
+  } satisfies Pick<ParseJobPublisher, 'publish'> & Record<string, jest.Mock>;
+}
+
 describe('ExamService.createDraftFromPdf', () => {
   let prisma: ReturnType<typeof buildPrismaFake>;
   let storage: ReturnType<typeof buildStorageFake>;
+  let publisher: ReturnType<typeof buildPublisherFake>;
   let service: ExamService;
 
   beforeEach(() => {
     prisma = buildPrismaFake();
     storage = buildStorageFake();
-    service = new ExamService(prisma as unknown as PrismaService, storage);
+    publisher = buildPublisherFake();
+    service = new ExamService(
+      prisma as unknown as PrismaService,
+      storage,
+      publisher as unknown as ParseJobPublisher,
+    );
   });
 
   it('rejects a non-PDF buffer even when the mimetype claims application/pdf', async () => {
@@ -93,6 +106,7 @@ describe('ExamService.createDraftFromPdf', () => {
     // Rejected on the bytes alone — nothing was written or created.
     expect(storage.writeTemp).not.toHaveBeenCalled();
     expect(prisma.exam.create).not.toHaveBeenCalled();
+    expect(publisher.publish).not.toHaveBeenCalled();
   });
 
   it('writes the temp file, creates a Draft/pending row, and returns it', async () => {
@@ -126,6 +140,31 @@ describe('ExamService.createDraftFromPdf', () => {
 
     // The success path still calls discardTemp (a no-op after the rename).
     expect(storage.discardTemp).toHaveBeenCalledWith('/tmp/handle.pdf');
+
+    // AC 4: the job is published exactly once, AFTER the transaction commits,
+    // with the message shape the Story 2.2 consumer will read.
+    expect(publisher.publish).toHaveBeenCalledTimes(1);
+    expect(publisher.publish).toHaveBeenCalledWith({
+      examId: 'exam-1',
+      sourceFileRef: 'exams/exam-1/source.pdf',
+      parseGeneration: 1,
+    });
+  });
+
+  it('still returns the exam when the publisher throws (dual-write gap accepted)', async () => {
+    publisher.publish.mockRejectedValueOnce(new Error('broker unreachable'));
+
+    const result = await service.createDraftFromPdf(
+      TEACHER_ID,
+      DTO,
+      multerFile(Buffer.from('%PDF-1.7 body')),
+    );
+
+    // The publish failure must not propagate and must not turn a successful
+    // upload into a failed one — the exam is created, the file is stored, and
+    // parse_status stays 'pending' (recoverable via Story 2.3's manual retry).
+    expect(result.id).toBe('exam-1');
+    expect(result.parseStatus).toBe('pending');
   });
 
   it('discards the temp file and persists no row when the transaction throws', async () => {
@@ -143,5 +182,10 @@ describe('ExamService.createDraftFromPdf', () => {
     // row was stamped/committed; the temp file is cleaned up.
     expect(prisma.exam.update).not.toHaveBeenCalled();
     expect(storage.discardTemp).toHaveBeenCalledWith('/tmp/handle.pdf');
+
+    // A transaction throw must never reach the publish step (publish is
+    // strictly after commit) — publishing here would enqueue a job for a
+    // row that was never persisted.
+    expect(publisher.publish).not.toHaveBeenCalled();
   });
 });

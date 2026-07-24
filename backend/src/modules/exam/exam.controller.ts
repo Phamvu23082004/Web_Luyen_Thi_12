@@ -4,11 +4,13 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { AiParseRateLimitGuard } from '../../common/guards/ai-parse-rate-limit.guard';
 import type { AuthUser } from '../../common/types/authenticated-request';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { ExamService } from './exam.service';
@@ -22,9 +24,11 @@ export class ExamController {
   // exam.module.ts, so `FileInterceptor('file')` carries no inline options here.
   // NestJS 11 maps multer's own errors correctly with no custom filter:
   // LIMIT_FILE_SIZE → 413, LIMIT_FILE_COUNT/LIMIT_UNEXPECTED_FILE → 400.
-  // No AiParseRateLimitGuard in 2.1a — the throttle arrives in 2.1b with the enqueue.
+  // AiParseRateLimitGuard runs before FileInterceptor (guards precede
+  // interceptors in NestJS 11), so a throttled teacher never buffers a PDF.
   @Post()
   @Roles('teacher')
+  @UseGuards(AiParseRateLimitGuard)
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @CurrentUser() user: AuthUser,

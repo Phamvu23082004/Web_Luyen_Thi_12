@@ -5,13 +5,18 @@ import { memoryStorage } from 'multer';
 import { getPositiveIntConfig } from '../../common/config/positive-int-config';
 import { FILE_STORAGE } from '../../common/storage/file-storage';
 import { LocalFileStorageService } from '../../common/storage/local-file-storage.service';
+import { AiParseRateLimitGuard } from '../../common/guards/ai-parse-rate-limit.guard';
+import { RedisModule } from '../../common/redis/redis.module';
+import { SlidingWindowRateLimiterService } from '../../common/rate-limit/sliding-window-rate-limiter.service';
 import { ExamController } from './exam.controller';
 import { ExamService } from './exam.service';
+import { ParseJobPublisher } from './parse-job.publisher';
 
 const DEFAULT_EXAM_PDF_MAX_BYTES = 20 * 1024 * 1024; // 20 MB
 
 @Module({
   imports: [
+    RedisModule,
     // registerAsync's useFactory runs at app init (after ConfigModule), so the
     // limit is read at runtime — not the module-load-time `undefined` a
     // decorator-inline `ConfigService.get` would capture. getPositiveIntConfig
@@ -38,6 +43,10 @@ const DEFAULT_EXAM_PDF_MAX_BYTES = 20 * 1024 * 1024; // 20 MB
   providers: [
     ExamService,
     { provide: FILE_STORAGE, useClass: LocalFileStorageService },
+    ParseJobPublisher,
+    SlidingWindowRateLimiterService,
+    AiParseRateLimitGuard,
   ],
+  exports: [ParseJobPublisher],
 })
 export class ExamModule {}
