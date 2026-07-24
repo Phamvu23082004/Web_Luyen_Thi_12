@@ -8,6 +8,7 @@ import { PrismaService } from '../../src/prisma/prisma.service';
 import { LocalFileStorageService } from '../../src/common/storage/local-file-storage.service';
 import type { FileStorage } from '../../src/common/storage/file-storage';
 import { ExamService } from '../../src/modules/exam/exam.service';
+import type { ParseJobPublisher } from '../../src/modules/exam/parse-job.publisher';
 import { CreateExamDto } from '../../src/modules/exam/dto/create-exam.dto';
 import type { PrismaClient } from '../../generated/prisma/client';
 import { createTestPrismaClient, resetDatabase } from './prisma-test-client';
@@ -73,8 +74,19 @@ describe('exam create — real-database row+file atomicity', () => {
     await rm(storageRoot, { recursive: true, force: true });
   });
 
+  // This spec proves the row+file atomicity property only — the publish-after-
+  // commit step (2.1b) is covered by exam.service.spec.ts and the e2e suite,
+  // so a no-op fake is enough here.
+  const publisher = {
+    publish: () => Promise.resolve(),
+  } as unknown as ParseJobPublisher;
+
   function service(fileStorage: FileStorage): ExamService {
-    return new ExamService(prisma as unknown as PrismaService, fileStorage);
+    return new ExamService(
+      prisma as unknown as PrismaService,
+      fileStorage,
+      publisher,
+    );
   }
 
   it('leaves exactly one row whose source_file_url resolves to a file on disk', async () => {

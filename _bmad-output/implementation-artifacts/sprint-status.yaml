@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-16
-last_updated: 2026-07-24  # story 2.1a done (code review passed, 8 patches applied); P1+P5 done; P2/P4/D1 still open
+last_updated: 2026-07-24  # story 2.1b done (code review passed, 4 patches applied); P1+P5 done; P2/P4/D1 still open
 project: Web_OnThi12
 project_key: NOKEY
 tracking_system: file-system
@@ -66,7 +66,7 @@ development_status:
   # compound shape). 2.1a = schema + upload -> stored Draft exam (AC 1-3);
   # 2.1b = publish parse job + per-teacher throttle (AC 4-5). 2.1b depends on 2.1a.
   2-1a-exam-schema-and-create-draft-exam-by-pdf-upload: done
-  2-1b-enqueue-parse-job-with-per-teacher-rate-limit: backlog
+  2-1b-enqueue-parse-job-with-per-teacher-rate-limit: done
   2-2-asynchronous-ai-parsing-worker-gemini-extraction: backlog
   2-3-gemini-reliability-retry-circuit-breaker-failure-surfacing: backlog
   2-4-review-screen-with-attention-flags: backlog

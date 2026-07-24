@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   FILE_STORAGE,
@@ -6,19 +11,22 @@ import {
 } from '../../common/storage/file-storage';
 import { CreateExamDto } from './dto/create-exam.dto';
 import type { Exam } from '../../../generated/prisma/client';
+import { ParseJobPublisher } from './parse-job.publisher';
 
 @Injectable()
 export class ExamService {
+  private readonly logger = new Logger(ExamService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(FILE_STORAGE) private readonly storage: FileStorage,
+    private readonly publisher: ParseJobPublisher,
   ) {}
 
   /**
-   * Upload → stored Draft exam (EXAM-01, AD-13). Creates the exam and stores its
-   * source PDF; does NOT call Gemini and does NOT enqueue anything — a 2.1a exam
-   * sits at `parse_status = pending` with nothing in the queue. Story 2.1b adds
-   * the publish-after-commit step.
+   * Upload → stored Draft exam → enqueued parse job (EXAM-01, AD-13). Creates
+   * the exam, stores its source PDF, and publishes a parse job once the row is
+   * durably committed. Does NOT call Gemini — that is Story 2.2's worker.
    */
   async createDraftFromPdf(
     teacherId: string,
@@ -64,8 +72,29 @@ export class ExamService {
         });
       });
 
-      // 4/5. status=draft, parse_status=pending, parse_generation=1 are all schema
-      //      defaults. Nothing is enqueued here — that line is Story 2.1b's.
+      // 4. status=draft, parse_status=pending, parse_generation=1 are all schema
+      //    defaults. Publish AFTER commit, never before/inside the transaction:
+      //    the Story 2.2 worker consumes { examId } and immediately reads the
+      //    row, so publishing earlier could let it win the race against a row
+      //    that does not exist yet (or one a rollback then deletes).
+      try {
+        await this.publisher.publish({
+          examId: exam.id,
+          sourceFileRef: exam.sourceFileUrl,
+          parseGeneration: exam.parseGeneration,
+        });
+      } catch (err) {
+        // Dual-write gap, stated honestly: the Postgres commit above and this
+        // RabbitMQ publish are NOT atomic. On failure the exam and its file
+        // are intact and parse_status stays 'pending' — Story 2.3's manual
+        // "retry parsing" is the recovery path. This does NOT build an
+        // outbox/2PC, and the exam is still returned with 201: a publish
+        // failure must never turn into a failed upload.
+        this.logger.error(
+          `Failed to publish parse job for exam ${exam.id}: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+
       return exam;
     } finally {
       // On any throw before commit the temp file still exists and this removes it;

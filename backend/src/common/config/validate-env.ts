@@ -44,6 +44,8 @@ const NUMERIC_VARS = [
   'LOGIN_RATE_LIMIT_ACCOUNT_MAX',
   'PASSWORD_RESET_TOKEN_TTL_MINUTES',
   'EXAM_PDF_MAX_BYTES',
+  'AI_PARSE_RATE_LIMIT_WINDOW_SECONDS',
+  'AI_PARSE_RATE_LIMIT_MAX',
 ] as const;
 
 // Optional string vars where blank (not just absent) must still fail at boot —

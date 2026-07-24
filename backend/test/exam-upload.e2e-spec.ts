@@ -9,6 +9,9 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { ExamController } from './../src/modules/exam/exam.controller';
 import { ExamService } from './../src/modules/exam/exam.service';
+import { ParseJobPublisher } from './../src/modules/exam/parse-job.publisher';
+import { AiParseRateLimitGuard } from './../src/common/guards/ai-parse-rate-limit.guard';
+import { SlidingWindowRateLimiterService } from './../src/common/rate-limit/sliding-window-rate-limiter.service';
 import { FILE_STORAGE } from './../src/common/storage/file-storage';
 import { PrismaService } from './../src/prisma/prisma.service';
 import { JwtAuthGuard } from './../src/common/guards/jwt-auth.guard';
@@ -21,6 +24,8 @@ const JWT_SECRET = 'e2e-access-secret';
 // Small on purpose so a tiny buffer can exceed it (the 413 path) without shipping
 // a multi-MB fixture through supertest.
 const MAX_BYTES = 1024;
+// Small on purpose so a handful of requests can exceed it without a slow test.
+const PARSE_RATE_LIMIT_MAX = 2;
 
 // In-memory fakes — no real Postgres/disk (password-reset.e2e-spec.ts precedent).
 // Stateful so `update` returns the created row merged with its change, exactly as
@@ -72,10 +77,28 @@ function buildStorageFake() {
   };
 }
 
+function buildPublisherFake() {
+  return { publish: jest.fn().mockResolvedValue(undefined) };
+}
+
+// A real per-key counter (not a Redis mock) so the guard's actual comparison
+// against AI_PARSE_RATE_LIMIT_MAX is exercised end to end through the route.
+function buildLimiterFake() {
+  const counts = new Map<string, number>();
+  const hit = jest.fn((key: string, max: number) => {
+    const count = (counts.get(key) ?? 0) + 1;
+    counts.set(key, count);
+    return Promise.resolve(count <= max);
+  });
+  return { hit };
+}
+
 describe('Exam upload (e2e)', () => {
   let app: INestApplication<App>;
   let jwt: JwtService;
   let storage: ReturnType<typeof buildStorageFake>;
+  let publisher: ReturnType<typeof buildPublisherFake>;
+  let limiter: ReturnType<typeof buildLimiterFake>;
 
   const bearer = (payload: AuthUser) =>
     `Bearer ${jwt.sign(payload, { secret: JWT_SECRET })}`;
@@ -84,12 +107,21 @@ describe('Exam upload (e2e)', () => {
 
   beforeEach(async () => {
     storage = buildStorageFake();
+    publisher = buildPublisherFake();
+    limiter = buildLimiterFake();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          load: [() => ({ JWT_SECRET, EXAM_PDF_MAX_BYTES: String(MAX_BYTES) })],
+          load: [
+            () => ({
+              JWT_SECRET,
+              EXAM_PDF_MAX_BYTES: String(MAX_BYTES),
+              AI_PARSE_RATE_LIMIT_MAX: String(PARSE_RATE_LIMIT_MAX),
+              AI_PARSE_RATE_LIMIT_WINDOW_SECONDS: '3600',
+            }),
+          ],
         }),
         JwtModule.register({}),
         // Mirrors exam.module.ts's registerAsync + getPositiveIntConfig exactly,
@@ -122,6 +154,12 @@ describe('Exam upload (e2e)', () => {
         { provide: APP_GUARD, useClass: RolesGuard },
         { provide: PrismaService, useValue: buildPrismaFake() },
         { provide: FILE_STORAGE, useValue: storage },
+        { provide: ParseJobPublisher, useValue: publisher },
+        // Route-scoped (@UseGuards on the controller), not an APP_GUARD — the
+        // real guard class wired against a fake limiter, so routing/guard
+        // order is exercised for real while Redis stays out of the e2e tier.
+        AiParseRateLimitGuard,
+        { provide: SlidingWindowRateLimiterService, useValue: limiter },
       ],
     }).compile();
 
@@ -215,5 +253,65 @@ describe('Exam upload (e2e)', () => {
       '/tmp/e2e-handle.pdf',
       'exams/exam-e2e-1/source.pdf',
     );
+    // AC 4: publisher called exactly once with the message the Story 2.2
+    // worker will consume.
+    expect(publisher.publish).toHaveBeenCalledTimes(1);
+    expect(publisher.publish).toHaveBeenCalledWith({
+      examId: 'exam-e2e-1',
+      sourceFileRef: 'exams/exam-e2e-1/source.pdf',
+      parseGeneration: 1,
+    });
+  });
+
+  it('still returns 201 when the publisher throws (dual-write gap accepted)', async () => {
+    publisher.publish.mockRejectedValueOnce(new Error('broker unreachable'));
+
+    const res = await withFields(post().set('Authorization', teacherToken()))
+      .attach('file', Buffer.from('%PDF-1.7 hello'), {
+        filename: 'e.pdf',
+        contentType: 'application/pdf',
+      })
+      .expect(201);
+
+    expect((res.body as { data: { id: string } }).data.id).toBe('exam-e2e-1');
+  });
+
+  // AC 5: the parse-enqueue endpoint is rate-limited per teacher.
+  it('rejects with 429 once a teacher exceeds the parse-enqueue window', async () => {
+    const upload = () =>
+      withFields(post().set('Authorization', teacherToken())).attach(
+        'file',
+        Buffer.from('%PDF-1.7 hello'),
+        { filename: 'e.pdf', contentType: 'application/pdf' },
+      );
+
+    for (let i = 0; i < PARSE_RATE_LIMIT_MAX; i++) {
+      await upload().expect(201);
+    }
+
+    const res = await upload().expect(429);
+    expect(res.body).not.toHaveProperty('errorCode');
+    // The guard runs before FileInterceptor, so a throttled request never
+    // reaches the service/storage.
+    expect(storage.writeTemp).toHaveBeenCalledTimes(PARSE_RATE_LIMIT_MAX);
+  });
+
+  it('does not throttle a different teacher sharing the same window', async () => {
+    for (let i = 0; i < PARSE_RATE_LIMIT_MAX; i++) {
+      await withFields(post().set('Authorization', teacherToken()))
+        .attach('file', Buffer.from('%PDF-1.7 hello'), {
+          filename: 'e.pdf',
+          contentType: 'application/pdf',
+        })
+        .expect(201);
+    }
+
+    const otherTeacherToken = bearer({ sub: 'teacher-2', role: 'teacher' });
+    await withFields(post().set('Authorization', otherTeacherToken))
+      .attach('file', Buffer.from('%PDF-1.7 hello'), {
+        filename: 'e.pdf',
+        contentType: 'application/pdf',
+      })
+      .expect(201);
   });
 });

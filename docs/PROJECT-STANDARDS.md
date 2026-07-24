@@ -250,6 +250,8 @@ Three backend tiers, each with a distinct job. Put a test in the cheapest tier t
 | `FRONTEND_BASE_URL` | Origin used to build the reset link (`${FRONTEND_BASE_URL}/reset-password?token=…`). Becomes the real domain in production. | `http://localhost:5173` | ✅ |
 | `STORAGE_ROOT` | Local blob root behind the `source_file_url` abstraction (AD-15). `/app/storage` inside the containers (shared `api`+`worker` volume). Falls back to `./storage` when absent. | `./storage` | ✅ |
 | `EXAM_PDF_MAX_BYTES` | Max exam-PDF upload size, in bytes. Falls back to 20 MB when absent; a present-but-blank/non-numeric value fails at boot. | `20971520` | ✅ |
+| `AI_PARSE_RATE_LIMIT_WINDOW_SECONDS` | Sliding-window length, in seconds, for the per-teacher parse-enqueue throttle. Falls back to 3600 when absent; a present-but-blank/non-numeric value fails at boot. | `3600` | ✅ |
+| `AI_PARSE_RATE_LIMIT_MAX` | Max parse-enqueue requests per teacher per window; bounds Gemini daily-quota burn (NFR-09). Falls back to 20 when absent; a present-but-blank/non-numeric value fails at boot. | `20` | ✅ |
 
 > `Required: ✅` means "set it in your `.env`," not "the process refuses to boot without it." Several rows above (`PASSWORD_RESET_TOKEN_TTL_MINUTES`, `STORAGE_ROOT`, `EXAM_PDF_MAX_BYTES`) have a documented runtime fallback and are absent-safe; what `validate-env.ts` actually enforces at boot is narrower — see its `REQUIRED_VARS` (must be present) vs. its format-checked vars (may be absent, but a *present-and-blank/malformed* value fails fast).
 
