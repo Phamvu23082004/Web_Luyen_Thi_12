@@ -20,6 +20,33 @@ enum Role {
   teacher
 }
 
+// Lowercase values are what the API and DB both speak (the `Role` precedent) —
+// no mapping layer between the enum and the wire/column value.
+enum ExamStatus {
+  draft
+  open
+  closed
+}
+
+// The AI-parse lifecycle of an exam's source PDF. Story 2.1a only ever sets
+// `pending` (upload → Draft, nothing enqueued yet); 2.1b enqueues, 2.2 moves it
+// through parsing/parsed/failed.
+enum ParseStatus {
+  pending
+  parsing
+  parsed
+  failed
+}
+
+// Gates assignment (EXAM-09): an exam cannot be assigned while any question is
+// `needs_confirmation`. Story 2.1a never creates a question; the worker (2.2) is
+// the first writer.
+enum AnswerStatus {
+  ai_extracted
+  needs_confirmation
+  manually_confirmed
+}
+
 // Owned by the `auth` module (AD-05). Server-generated cuid ids are the
 // project-wide id convention — every future table follows this.
 model User {
@@ -33,6 +60,7 @@ model User {
   classesTaught      Class[]              // a teacher owns many classes
   enrollments        ClassStudent[]       // a student is enrolled in many classes
   passwordResetTokens PasswordResetToken[]
+  examsCreated       Exam[]               // a teacher creates many exams
 
   @@map("users")
 }
@@ -60,8 +88,9 @@ model Class {
   name      String
   teacherId String @map("teacher_id")
 
-  teacher  User           @relation(fields: [teacherId], references: [id])
-  students ClassStudent[]
+  teacher     User           @relation(fields: [teacherId], references: [id])
+  students    ClassStudent[]
+  examClasses ExamClass[]
 
   @@map("classes")
 }
@@ -76,4 +105,76 @@ model ClassStudent {
 
   @@id([classId, studentId])
   @@map("class_students")
+}
+
+// Owned by the `exam` module (AD-05). `exam` is the ONLY writer of `exams` and
+// `questions`; the parse worker (Story 2.2) persists THROUGH exam's service, not
+// directly (AD-07). `source_file_url` is NOT NULL — that is what makes AD-01 ("no
+// exam without a Source File") structural rather than a controller check.
+model Exam {
+  id              String      @id @default(cuid())
+  title           String
+  subject         String
+  durationMinutes Int         @map("duration_minutes")
+  teacherId       String      @map("teacher_id")
+  status          ExamStatus  @default(draft)
+  // Stores a storage KEY (`exams/<id>/source.pdf`), not an absolute URL — the
+  // FileStorage adapter resolves it (AD-15). A key keeps a later S3/MinIO swap to
+  // one adapter; a stored URL would need rewriting every value. The column keeps
+  // its schema-mandated name (AR-3, SRS §7) despite holding a key.
+  sourceFileUrl   String      @map("source_file_url")
+  parseStatus     ParseStatus @default(pending) @map("parse_status")
+  parseError      String?     @map("parse_error")
+  // Fencing token (AD-21). Seeded at 1 here; 2.2 enforces it, 2.3 increments it
+  // on manual retry so a stale worker's write is discarded.
+  parseGeneration Int         @default(1) @map("parse_generation")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  teacher     User        @relation(fields: [teacherId], references: [id])
+  questions   Question[]
+  examClasses ExamClass[]
+
+  @@index([teacherId])
+  @@map("exams")
+}
+
+// Join table. AD-05 assigns this table to the `class` module — Story 2.1a only
+// creates it; Story 2.8's exam.assign() writes it THROUGH class's service
+// interface (AD-06). Do NOT add a write path here.
+model ExamClass {
+  examId  String   @map("exam_id")
+  classId String   @map("class_id")
+  // @db.Date is load-bearing (AD-11/AR-13): a plain DateTime would reintroduce
+  // the UTC+7 off-by-one on due-date comparisons. 2.1a never compares it, but the
+  // column type must be right from the first migration.
+  dueDate DateTime @map("due_date") @db.Date
+
+  exam  Exam  @relation(fields: [examId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id])
+
+  @@id([examId, classId])
+  @@map("exam_classes")
+}
+
+// Owned by the `exam` module (AD-05). Story 2.1a never creates a question — the
+// worker (Story 2.2) is the first writer. `correct_answer` is nullable; gate
+// assignment on `answer_status`, never on whether the field is set (EXAM-09).
+model Question {
+  id            String       @id @default(cuid())
+  examId        String       @map("exam_id")
+  content       String
+  options       Json
+  correctAnswer String?      @map("correct_answer")
+  answerStatus  AnswerStatus @map("answer_status")
+  reviewedAt    DateTime?    @map("reviewed_at")
+  aiConfidence  Float?       @map("ai_confidence")
+  imageUrl      String?      @map("image_url")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([examId])
+  @@map("questions")
 }

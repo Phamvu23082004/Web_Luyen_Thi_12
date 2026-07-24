@@ -25,10 +25,18 @@ export function createTestPrismaClient(): PrismaClient {
  * Deliberately `deleteMany` per model rather than a raw `TRUNCATE ... CASCADE`:
  * Prisma 7's raw-query path performs a dynamic import that Jest's VM rejects
  * without `--experimental-vm-modules`, and the typed delegates avoid the whole
- * problem. Every relation in this schema is ON DELETE RESTRICT, so the order
- * below is load-bearing — extend it as Epic 2+ tables land.
+ * problem. Every parent-to-child relation still standing (RESTRICT or CASCADE)
+ * needs children deleted first regardless — CASCADE just makes the parent-row
+ * delete forgiving, not the order below optional — extend it as Epic 2+ tables
+ * land.
  */
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
+  // Exam tables first: `questions`/`exam_classes` are children of `exams`
+  // (ON DELETE CASCADE), and `exams`→`users` / `exam_classes`→`classes` are
+  // ON DELETE RESTRICT, so these must go before `class`/`user` below (Story 2.1a).
+  await prisma.question.deleteMany();
+  await prisma.examClass.deleteMany();
+  await prisma.exam.deleteMany();
   await prisma.passwordResetToken.deleteMany();
   await prisma.classStudent.deleteMany();
   await prisma.class.deleteMany();

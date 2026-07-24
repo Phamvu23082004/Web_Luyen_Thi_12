@@ -18,6 +18,12 @@ out/
 # Prisma generated client
 backend/generated/
 
+# Local file-storage blob root (STORAGE_ROOT default, AD-15) — dev uploads,
+# never committed. Containers use the `exam_files` named volume instead.
+# Anchored to the repo root: an unanchored `storage/` would also match
+# backend/src/common/storage/, the FileStorage source directory.
+/backend/storage/
+
 # Environment
 .env
 .env.local

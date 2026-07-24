@@ -54,6 +54,7 @@ services:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       PORT: 3000
       NODE_ENV: development
+      STORAGE_ROOT: /app/storage
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -67,6 +68,9 @@ services:
       - /app/node_modules
       - /app/generated
       - /app/dist
+      # Shared blob volume behind source_file_url (AD-15): api writes the source
+      # PDF (Story 2.1a), worker reads it (2.2) and writes figure crops (2.6).
+      - exam_files:/app/storage
     depends_on:
       postgres:
         condition: service_healthy
@@ -93,6 +97,7 @@ services:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       WORKER: "true"
       NODE_ENV: development
+      STORAGE_ROOT: /app/storage
     restart: unless-stopped
     volumes:
       - ./backend:/app
@@ -104,6 +109,9 @@ services:
       - /app/node_modules
       - /app/generated
       - /app/dist
+      # Shared blob volume behind source_file_url (AD-15): api writes the source
+      # PDF (Story 2.1a), worker reads it (2.2) and writes figure crops (2.6).
+      - exam_files:/app/storage
     depends_on:
       postgres:
         condition: service_healthy
@@ -114,3 +122,4 @@ services:
 
 volumes:
   postgres_data:
+  exam_files:

@@ -14,12 +14,21 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ClassModule } from './modules/class/class.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
+import { validateEnv } from './common/config/validate-env';
 
 @Module({
   imports: [
     // `backend/.env` first (local override, also what the Prisma CLI reads),
     // then the repo-root `.env` that `.env.example` documents and compose loads.
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env', '../.env'] }),
+    // `validate` fails fast at boot on a missing/blank required var or a
+    // present-but-malformed numeric (Epic 1 retro P1) — kills Pattern 2 before
+    // it becomes a wrong result on a request path. Runs on real HTTP/worker
+    // boots only; e2e specs use their own ConfigModule.forRoot without it.
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '../.env'],
+      validate: validateEnv,
+    }),
     // Guards need JwtService; the per-verify secret is passed explicitly
     // (mirrors auth.module.ts — two independent JwtModule.register({}) are fine).
     JwtModule.register({}),

@@ -362,7 +362,9 @@ So that I can regain access on my own. *(FR-3)*
 
 A Teacher creates an Exam by uploading a PDF, the AI extracts questions asynchronously, and the Teacher reviews/corrects, confirms missing answers and figures, then assigns to classes — with the assignment gate blocking any exam that still has an unconfirmed answer or unresolved flag. Realizes EXAM-01→09 as one seamless flow over the `exam` module + `ai-parsing` worker.
 
-### Story 2.1: Exam schema & create Draft exam by PDF upload
+> **Story 2.1 was split at create-story time (2026-07-24)** into **2.1a** and **2.1b**, per Epic 1 retrospective action item P5 — the original introduced three new axes (schema + migration, multipart upload + blob storage + volume, RabbitMQ confirm-channel publisher), the compound shape that produced Story 1.8's 25 review findings. AC 1-3 → 2.1a; AC 4-5 → 2.1b. 2.1b depends on 2.1a. The five ACs below are preserved verbatim under their new stories.
+
+### Story 2.1a: Exam schema & create Draft exam by PDF upload
 
 As a teacher,
 I want to create an exam by uploading one PDF and entering its basics,
@@ -382,7 +384,15 @@ So that I never retype an exam and the file becomes the exam's single source. *(
 **When** no PDF is provided
 **Then** it is rejected — no code path creates an exam without a Source File.
 
-**Given** a created Draft exam
+### Story 2.1b: Enqueue the parse job, with a per-teacher rate limit
+
+As a teacher,
+I want my uploaded exam queued for AI parsing automatically and my uploads throttled,
+So that the review screen fills itself and a burst of uploads can't burn the Gemini daily quota. *(FR-4; supports FR-5, NFR-09)*
+
+**Acceptance Criteria:**
+
+**Given** a created Draft exam (from Story 2.1a)
 **When** creation completes
 **Then** a parse job `{ examId, sourceFileRef, parse_generation }` is published to RabbitMQ. *(AR-7 publish side)*
 
