@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-16
-last_updated: 2026-07-23  # epic-1 retro prep: critical path C1-C5 done (+P3); P1/P2/P4/P5/D1/D2 still open
+last_updated: 2026-07-24  # story 2.1a done (code review passed, 8 patches applied); P1+P5 done; P2/P4/D1 still open
 project: Web_OnThi12
 project_key: NOKEY
 tracking_system: file-system
@@ -61,8 +61,12 @@ development_status:
   epic-1-retrospective: done
 
   # Epic 2: Exam Creation via PDF + AI Parsing
-  epic-2: backlog
-  2-1-exam-schema-and-create-draft-exam-by-pdf-upload: backlog
+  epic-2: in-progress
+  # Story 2.1 split at create-story per retro action item P5 (3 new axes = the 1.8
+  # compound shape). 2.1a = schema + upload -> stored Draft exam (AC 1-3);
+  # 2.1b = publish parse job + per-teacher throttle (AC 4-5). 2.1b depends on 2.1a.
+  2-1a-exam-schema-and-create-draft-exam-by-pdf-upload: done
+  2-1b-enqueue-parse-job-with-per-teacher-rate-limit: backlog
   2-2-asynchronous-ai-parsing-worker-gemini-extraction: backlog
   2-3-gemini-reliability-retry-circuit-breaker-failure-surfacing: backlog
   2-4-review-screen-with-attention-flags: backlog
@@ -133,7 +137,7 @@ action_items:
   - epic: 1
     action: "P1 - Add validationSchema to ConfigModule.forRoot() so missing/blank/non-numeric env vars fail fast at boot"
     owner: "Winston (Architect)"
-    status: open
+    status: done  # 2026-07-24: validateEnv() wired into ConfigModule.forRoot(); required infra URLs + present-but-malformed numerics fail at boot; secrets carved out to preserve fresh-clone `docker compose up` (see validate-env.ts). 13 tests; full backend suite green (81 unit / 22 e2e)
   - epic: 1
     action: "P2 - Add a review lens: does any comment/JSDoc/Dev Note claim a property the code does not have (atomicity, constant-time, idempotency, single-use, fencing)"
     owner: "Amelia (Developer)"
@@ -149,7 +153,7 @@ action_items:
   - epic: 1
     action: "P5 - Size Epic 2 stories against the 1.8 lesson at create-story: split any story introducing more than one new axis"
     owner: "John (Product Manager)"
-    status: open
+    status: done  # 2.1 sized at create-story: 3 new axes -> split into 2.1a (schema+upload) and 2.1b (enqueue+throttle) by Admin, 2026-07-24
   - epic: 1
     action: "D1 - Correct ARCHITECTURE-SPINE.md Deferred section: remove the stale password-reset-email-provider stub bullet resolved by Story 1.8"
     owner: "Paige (Technical Writer)"
